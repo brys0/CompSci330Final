@@ -2,7 +2,7 @@ plugins {
     id("java")
 }
 
-group = "org.uwgb.compsci330.final"
+group = "org.uwgb.compsci330.termfinal"
 version = "1.0-SNAPSHOT"
 
 repositories {

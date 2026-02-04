@@ -1,6 +1,4 @@
-package org.uwgb.compsci330.
-
-final;
+package org.uwgb.compsci330.termfinal;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
