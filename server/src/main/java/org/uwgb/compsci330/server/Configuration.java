@@ -4,6 +4,7 @@ package org.uwgb.compsci330.server;
 public class Configuration {
     private Configuration() {}
 
+    public static final String SERVER_VERSION = "0.0.1";
     public static final int MIN_PASSWORD_LENGTH = 6;
     public static final int MIN_USERNAME_LENGTH = 2;
     public static final int MAX_USERNAME_LENGTH = 8;

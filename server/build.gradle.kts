@@ -33,6 +33,7 @@ dependencies {
 	implementation("org.hibernate.orm:hibernate-community-dialects")
 // Source: https://mvnrepository.com/artifact/org.springframework.security/spring-security-core
 	implementation("org.springframework.security:spring-security-core:7.1.0-M2")
+	//implementation("org.springframework.boot:spring-boot-starter-actuator")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 //	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
@@ -46,6 +47,11 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5") // for JSON parsing
+
+	// Spring OpenAPI documentation
+//	implementation("org.springdoc:springdoc-openapi-data-rest:1.8.0")
+	implementation("org.springdoc:springdoc-openapi-starter-common:3.0.1")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
 }
 
 tasks.withType<Test> {

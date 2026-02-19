@@ -12,6 +12,8 @@ public class User {
     private String password;
     private int status;
 
+//    private List<Conver>
+
     public User() {
     }
 

@@ -11,8 +11,10 @@ public class RegisterUserRequest {
     @Size(min = 7)
     private String password;
 
+    @SuppressWarnings("unused")
     public RegisterUserRequest() {}
 
+    @SuppressWarnings("unused")
     public RegisterUserRequest(String username, String password) {
         this.username = username;
         this.password = password;
