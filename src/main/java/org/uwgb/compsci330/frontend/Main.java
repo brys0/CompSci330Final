@@ -1,4 +1,4 @@
-package org.uwgb.compsci330.termfinal;
+package org.uwgb.compsci330.frontend;
 
 // We need to create a generic main class
 // That just calls our JavaFX class

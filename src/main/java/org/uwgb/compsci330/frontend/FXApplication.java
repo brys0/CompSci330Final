@@ -1,4 +1,4 @@
-package org.uwgb.compsci330.termfinal;
+package org.uwgb.compsci330.frontend;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
