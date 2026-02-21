@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.uwgb.compsci330.server.Configuration;
 import org.uwgb.compsci330.server.dto.request.LoginUserRequest;
+import org.uwgb.compsci330.server.dto.request.UserDeleteRequest;
 import org.uwgb.compsci330.server.dto.response.SafeUser;
 import org.uwgb.compsci330.server.entity.User;
 import org.uwgb.compsci330.server.dto.request.RegisterUserRequest;
@@ -81,6 +82,25 @@ public class UserService {
 
             return new SafeUser(user.getFirst());
         } catch (Exception e) {
+            throw new UnauthorizedException();
+        }
+    }
+
+    @Transactional
+    public void deleteUser(String token, UserDeleteRequest req) {
+        try {
+            String userId = JwtUtil.getUserIdFromToken(token);
+            List<User> user = userRepository.findUserById(userId);
+
+            if (user.isEmpty()) throw new UnauthorizedException();
+            if (req.getPassword().isBlank()) throw new PasswordIncorrectForUserDeletionException();
+
+            User usr = user.getFirst();
+
+            if (!BCrypt.checkpw(req.getPassword(), usr.getPassword())) throw new PasswordIncorrectForUserDeletionException();
+            
+            userRepository.deleteById(usr.getId());
+        } catch (RuntimeException e) {
             throw new UnauthorizedException();
         }
     }

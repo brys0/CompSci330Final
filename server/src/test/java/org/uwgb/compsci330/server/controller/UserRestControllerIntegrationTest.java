@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.uwgb.compsci330.server.APIServerApplication;
 import org.uwgb.compsci330.server.dto.request.LoginUserRequest;
 import org.uwgb.compsci330.server.dto.request.RegisterUserRequest;
+import org.uwgb.compsci330.server.dto.request.UserDeleteRequest;
 import org.uwgb.compsci330.server.repository.UserRepository;
 import tools.jackson.databind.ObjectMapper;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,6 +53,13 @@ public class UserRestControllerIntegrationTest {
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(); // Expect success when creating the user
     }
 
+    private String getUserByToken(String token) throws Exception {
+
+        return mvc.perform(get("/users/@me")
+                        .header("Authorization", token))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(); // Expect success when creating the user
+    }
     @Test
     public void registerUser_whenValid_thenReturns200() throws Exception {
         RegisterUserRequest req = new RegisterUserRequest("test", "password12345");
@@ -185,5 +192,78 @@ public class UserRestControllerIntegrationTest {
         mvc.perform(get("/users/@me"))
                 .andDo(print())
                 .andExpect(status().is(400));
+    }
+
+    @Test
+    public void deleteSelfUser_whenValid_thenReturns204() throws Exception {
+        final String password = "password12345";
+        String token = createUser("test", password);
+
+        UserDeleteRequest reqBody = new UserDeleteRequest(password);
+
+        // Delete the actual user
+        mvc.perform(delete("/users/@me")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reqBody)))
+                .andDo(print())
+                .andExpect(status().is(204));
+
+
+        // Next we make sure the get user by token doesn't work.
+        mvc.perform(get("/users/@me")
+                        .header("Authorization", token))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
+    public void deleteSelfUser_whenInvalidToken_thenReturns401() throws Exception {
+        final String password = "password12345";
+        String token = createUser("test", password);
+
+        UserDeleteRequest reqBody = new UserDeleteRequest(password);
+
+        // Delete the actual user
+        mvc.perform(delete("/users/@me")
+                        .header("Authorization", "invalid token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reqBody)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+
+        // Next we make sure the get user by token doesn't work.
+        mvc.perform(get("/users/@me")
+                        .header("Authorization", token))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void deleteSelfUser_whenInvalidPassword_thenReturns401() throws Exception {
+        final String password = "password12345";
+        String token = createUser("test", password);
+
+        // Password should be "password123456"
+        UserDeleteRequest reqBody = new UserDeleteRequest(password+"6");
+
+        // Delete the actual user
+        mvc.perform(delete("/users/@me")
+                        .header("Authorization", token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reqBody)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+
+        // Next we make sure the get user by token doesn't work.
+        mvc.perform(get("/users/@me")
+                        .header("Authorization", token))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.uwgb.compsci330.server.dto.request.LoginUserRequest;
 import org.uwgb.compsci330.server.dto.request.RegisterUserRequest;
+import org.uwgb.compsci330.server.dto.request.UserDeleteRequest;
 import org.uwgb.compsci330.server.dto.response.ErrorResponse;
 import org.uwgb.compsci330.server.dto.response.SafeUser;
 import org.uwgb.compsci330.server.exception.*;
@@ -127,6 +128,41 @@ public class UserController {
         return userService.getMe(auth);
     }
 
+    @Operation(summary = "Delete current user with given token and password confirmation")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "User was deleted"
+            ),
+
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Authorization token was not provided or invalid.",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    }
+            ),
+
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Password was incorrect or invalid.",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    }
+            ),
+    })
+    @Parameter(name = "Authorization", description = "JWT Token", required = true, in = ParameterIn.HEADER)
+    @DeleteMapping("/@me")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void deleteUser(@RequestHeader("Authorization") String auth, @RequestBody UserDeleteRequest req) {
+        userService.deleteUser(auth, req);
+    }
 
     @ExceptionHandler(value = UserAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -161,6 +197,12 @@ public class UserController {
     @ExceptionHandler(value = UsernameTooShortException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUsernameTooShortException(UsernameTooShortException ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(value = PasswordIncorrectForUserDeletionException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handlePasswordIncorrectForDeletionException(PasswordIncorrectForUserDeletionException ex) {
         return new ErrorResponse(ex.getMessage());
     }
 }
