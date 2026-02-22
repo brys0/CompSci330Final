@@ -44,3 +44,4 @@ bin/
 
 # Do not include server db
 ./server/*.db
+/main.db

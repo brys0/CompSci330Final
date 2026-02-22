@@ -45,6 +45,10 @@ public class Relationship {
         return String.format("%s: %s (%s to %s)", id, status, requester, requestee);
     }
 
+    public String getId() {
+        return id;
+    }
+
     public User getRequester() {
         return requester;
     }

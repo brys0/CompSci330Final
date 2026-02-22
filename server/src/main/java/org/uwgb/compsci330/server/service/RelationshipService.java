@@ -72,7 +72,23 @@ public class RelationshipService {
     }
 
     @Transactional
+    public void deleteRelationship(String userId, String otherUserId) {
+        final List<Relationship> existingUserRelationships = relationshipRepository.findAllRelationships(userId);
+
+        // Iterate over relationships
+        for (Relationship relationship : existingUserRelationships) {
+            // Relationship exists, we can delete it.
+            if (relationship.getRequestee().getId().equals(otherUserId) || relationship.getRequester().getId().equals(otherUserId)) {
+                relationshipRepository.deleteById(relationship.getId());
+                return;
+            }
+        }
+
+        throw new RelationshipDoesNotExistException(otherUserId);
+    }
+
+    @Transactional
     public List<SafeRelationship> getRelationships(String userId) {
-        return relationshipRepository.findAllRelationships(userId);
+        return relationshipRepository.findAllSafeRelationships(userId);
     }
 }
