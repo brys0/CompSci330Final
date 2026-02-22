@@ -29,10 +29,12 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
+	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.xerial:sqlite-jdbc:3.41.2.2")
 	implementation("org.hibernate.orm:hibernate-community-dialects")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 // Source: https://mvnrepository.com/artifact/org.springframework.security/spring-security-core
-	implementation("org.springframework.security:spring-security-core:7.1.0-M2")
+//	implementation("org.springframework.security:spring-security-core:7.1.0-M2")
 	//implementation("org.springframework.boot:spring-boot-starter-actuator")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")

@@ -191,7 +191,7 @@ public class UserRestControllerIntegrationTest {
 
         mvc.perform(get("/users/@me"))
                 .andDo(print())
-                .andExpect(status().is(400));
+                .andExpect(status().is(401));
     }
 
     @Test

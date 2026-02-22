@@ -14,6 +14,12 @@ public class SafeUser {
         this.status = user.getStatus();
     }
 
+    public SafeUser(String id, String username, int status) {
+        this.id = id;
+        this.username = username;
+        this.status = status;
+    }
+
     public String getId() {
         return id;
     }

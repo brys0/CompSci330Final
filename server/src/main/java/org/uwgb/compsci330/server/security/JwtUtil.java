@@ -15,6 +15,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(id)
                 .claim("userId", id)
+                .claim("username", username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + Configuration.JWT_EXPIRATION_MS))
                 .signWith(key)

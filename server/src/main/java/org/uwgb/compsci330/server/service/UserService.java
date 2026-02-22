@@ -47,7 +47,6 @@ public class UserService {
         if (userRequest.getPassword().length() < Configuration.MIN_PASSWORD_LENGTH) throw new PasswordTooShortException();
 
         User newUser = new User(
-                UUID.randomUUID().toString(),
                 username,
                 encoder.encode(userRequest.getPassword())
         );
@@ -57,7 +56,6 @@ public class UserService {
         return JwtUtil.generateToken(newUser.getId(), newUser.getUsername());
     }
 
-    @Transactional
     public String login(LoginUserRequest loginRequest) {
         List<User> users = userRepository.findByUsername(loginRequest.getUsername());
         // Username wasn't found.
@@ -72,7 +70,6 @@ public class UserService {
     }
 
 
-    @Transactional
     public SafeUser getMe(String token) {
         try {
             String userId = JwtUtil.getUserIdFromToken(token);

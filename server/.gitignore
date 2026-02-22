@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+/main.db
+/main.db-shm
+/main.db-wal
