@@ -24,5 +24,5 @@ tasks.test {
 
 javafx {
     version = "25.0.2"
-    modules = listOf("javafx.graphics", "javafx.controls")
+    modules = listOf("javafx.graphics", "javafx.controls", "javafx.fxml")
 }
