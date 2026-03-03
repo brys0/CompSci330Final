@@ -16,10 +16,6 @@ import org.uwgb.compsci330.server.exception.*;
 import org.uwgb.compsci330.server.repository.UserRepository;
 import org.uwgb.compsci330.server.security.JwtUtil;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 @Service
 public class UserService {
     @Autowired

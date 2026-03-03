@@ -22,7 +22,6 @@ import org.uwgb.compsci330.server.exception.SelfFriendException;
 import org.uwgb.compsci330.server.security.JwtUtil;
 import org.uwgb.compsci330.server.service.RelationshipService;
 import org.uwgb.compsci330.server.service.UserService;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -52,9 +51,6 @@ public class RelationshipRestControllerIntegrationTest {
     @Autowired
     private RelationshipService relationshipService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     private String createTestUser(String username) {
         return userService.register(new RegisterUserRequest(username, "password12345"));
     }
@@ -63,6 +59,7 @@ public class RelationshipRestControllerIntegrationTest {
         return userService.getMe(token);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     private SafeRelationship createRelationship(String requester, String requestee) {
         return relationshipService.createRelationship(requester, requestee);
     }
@@ -256,7 +253,6 @@ public class RelationshipRestControllerIntegrationTest {
         String requester = createTestUser("alice");
         String requestee = createTestUser("bob");
 
-        String requesterUsername = getTestUser(requester).getUsername();
         String requesteeUsername = getTestUser(requestee).getUsername();
 
         String requesterId = JwtUtil.getUserIdFromToken(requester);
