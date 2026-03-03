@@ -24,6 +24,9 @@ import org.uwgb.compsci330.server.service.RelationshipService;
 import org.uwgb.compsci330.server.service.UserService;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -62,6 +65,10 @@ public class RelationshipRestControllerIntegrationTest {
 
     private SafeRelationship createRelationship(String requester, String requestee) {
         return relationshipService.createRelationship(requester, requestee);
+    }
+
+    private List<SafeRelationship> getRelationships(String userID) {
+        return relationshipService.getRelationships(userID);
     }
 
     @Test
@@ -198,4 +205,95 @@ public class RelationshipRestControllerIntegrationTest {
 
     // TODO: Finish /user/@me/relationships DELETE tests
 
+    @Test
+    public void deleteExistingRelationship_whenValid_thenReturns204() throws Exception {
+        String requester = createTestUser("alice");
+        String requestee = createTestUser("bob");
+
+        String requesterUsername = getTestUser(requester).getUsername();
+        String requesteeUsername = getTestUser(requestee).getUsername();
+
+        String requesterId = JwtUtil.getUserIdFromToken(requester);
+        String requesteeId = JwtUtil.getUserIdFromToken(requestee);
+
+        createRelationship(requesterId, requesteeUsername);
+        createRelationship(requesteeId, requesterUsername);
+
+        mvc.perform(
+                delete(String.format("/users/@me/relationships/%s", requesterUsername))
+                        .header("Authorization", requestee)
+        )
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        assert getRelationships(requesterId).isEmpty();
+    }
+
+    @Test
+    public void deletePendingIncomingRelationship_whenValid_thenReturns204() throws Exception {
+        String requester = createTestUser("alice");
+        String requestee = createTestUser("bob");
+
+        String requesterUsername = getTestUser(requester).getUsername();
+        String requesteeUsername = getTestUser(requestee).getUsername();
+
+        String requesterId = JwtUtil.getUserIdFromToken(requester);
+
+        createRelationship(requesterId, requesteeUsername);
+
+        mvc.perform(
+                        delete(String.format("/users/@me/relationships/%s", requesterUsername))
+                                .header("Authorization", requestee)
+                )
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        assert getRelationships(requesterId).isEmpty();
+    }
+
+    @Test
+    public void deletePendingOutgoingRelationship_whenValid_thenReturns204() throws Exception {
+        String requester = createTestUser("alice");
+        String requestee = createTestUser("bob");
+
+        String requesterUsername = getTestUser(requester).getUsername();
+        String requesteeUsername = getTestUser(requestee).getUsername();
+
+        String requesterId = JwtUtil.getUserIdFromToken(requester);
+
+        createRelationship(requesterId, requesteeUsername);
+
+        mvc.perform(
+                        delete(String.format("/users/@me/relationships/%s", requesteeUsername))
+                                .header("Authorization", requester)
+                )
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        assert getRelationships(requesterId).isEmpty();
+    }
+
+    @Test
+    public void deleteExistingRelationship_whenInvalidRelationship_thenReturns400() throws Exception {
+        String requester = createTestUser("alice");
+        String requestee = createTestUser("bob");
+
+        String requesterUsername = getTestUser(requester).getUsername();
+        String requesteeUsername = getTestUser(requestee).getUsername();
+
+        String requesterId = JwtUtil.getUserIdFromToken(requester);
+        String requesteeId = JwtUtil.getUserIdFromToken(requestee);
+
+        createRelationship(requesterId, requesteeUsername);
+        createRelationship(requesteeId, requesterUsername);
+
+        mvc.perform(
+                        delete(String.format("/users/@me/relationships/%s", requesterUsername+"bleh"))
+                                .header("Authorization", requestee)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+        assert !getRelationships(requesterId).isEmpty();
+    }
 }
