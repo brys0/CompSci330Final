@@ -17,6 +17,7 @@ import org.uwgb.compsci330.server.repository.UserRepository;
 import org.uwgb.compsci330.server.security.JwtUtil;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -57,11 +58,8 @@ public class UserService {
     }
 
     public String login(LoginUserRequest loginRequest) {
-        List<User> users = userRepository.findByUsername(loginRequest.getUsername());
-        // Username wasn't found.
-        if (users.isEmpty()) throw new UsernameOrPasswordIncorrectException();
-
-        User user = users.getFirst();
+        User user = userRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(UsernameOrPasswordIncorrectException::new);
 
         // Password was incorrect.
         if (!BCrypt.checkpw(loginRequest.getPassword(), user.getPassword())) throw new UsernameOrPasswordIncorrectException();
@@ -73,11 +71,10 @@ public class UserService {
     public SafeUser getMe(String token) {
         try {
             String userId = JwtUtil.getUserIdFromToken(token);
-            List<User> user = userRepository.findUserById(userId);
+            User user = userRepository.findUserById(userId)
+                    .orElseThrow(UnauthorizedException::new);
 
-            if (user.isEmpty()) throw new UnauthorizedException();
-
-            return new SafeUser(user.getFirst());
+            return new SafeUser(user);
         } catch (Exception e) {
             throw new UnauthorizedException();
         }
@@ -87,16 +84,14 @@ public class UserService {
     public void deleteUser(String token, UserDeleteRequest req) {
         try {
             String userId = JwtUtil.getUserIdFromToken(token);
-            List<User> user = userRepository.findUserById(userId);
+            User user = userRepository.findUserById(userId)
+                    .orElseThrow(UnauthorizedException::new);
 
-            if (user.isEmpty()) throw new UnauthorizedException();
             if (req.getPassword().isBlank()) throw new PasswordIncorrectForUserDeletionException();
 
-            User usr = user.getFirst();
-
-            if (!BCrypt.checkpw(req.getPassword(), usr.getPassword())) throw new PasswordIncorrectForUserDeletionException();
+            if (!BCrypt.checkpw(req.getPassword(), user.getPassword())) throw new PasswordIncorrectForUserDeletionException();
             
-            userRepository.deleteById(usr.getId());
+            userRepository.deleteById(user.getId());
         } catch (RuntimeException e) {
             throw new UnauthorizedException();
         }

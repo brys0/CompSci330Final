@@ -34,8 +34,6 @@ public class RelationshipService {
 
         Relationship existingRelationship = relationshipRepository
                 .findRelationshipByUserAndOtherUser(userId, otherUser.getId())
-                .stream()
-                .findFirst()
                 .orElse(null);
 
         if (existingRelationship != null) {
@@ -72,19 +70,20 @@ public class RelationshipService {
     }
 
     @Transactional
-    public void deleteRelationship(String userId, String otherUserId) {
+    public void deleteRelationship(String userId, String otherUsername) {
         final List<Relationship> existingUserRelationships = relationshipRepository.findAllRelationships(userId);
+
 
         // Iterate over relationships
         for (Relationship relationship : existingUserRelationships) {
             // Relationship exists, we can delete it.
-            if (relationship.getRequestee().getId().equals(otherUserId) || relationship.getRequester().getId().equals(otherUserId)) {
+            if (relationship.getRequestee().getUsername().equals(otherUsername) || relationship.getRequester().getUsername().equals(otherUsername)) {
                 relationshipRepository.deleteById(relationship.getId());
                 return;
             }
         }
 
-        throw new RelationshipDoesNotExistException(otherUserId);
+        throw new RelationshipDoesNotExistException(otherUsername);
     }
 
     @Transactional

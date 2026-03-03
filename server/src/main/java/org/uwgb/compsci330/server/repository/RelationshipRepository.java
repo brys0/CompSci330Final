@@ -7,6 +7,7 @@ import org.uwgb.compsci330.server.dto.response.SafeRelationship;
 import org.uwgb.compsci330.server.entity.Relationship;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RelationshipRepository extends JpaRepository<Relationship, String> {
@@ -18,5 +19,5 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Stri
 
     // TODO: Use Optional<Relationship> instead of list return
     @Query("SELECT r FROM relationships r WHERE (r.requester.id = :userId OR r.requestee.id = :userId) AND (r.requester.id = :otherUserId OR r.requestee.id = :otherUserId)")
-    List<Relationship> findRelationshipByUserAndOtherUser(String userId, String otherUserId);
+    Optional<Relationship> findRelationshipByUserAndOtherUser(String userId, String otherUserId);
 }
