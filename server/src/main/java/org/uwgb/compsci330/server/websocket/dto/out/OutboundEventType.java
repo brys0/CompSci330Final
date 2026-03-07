@@ -6,5 +6,8 @@ public enum OutboundEventType {
     // Server can't resume the last events for the client, either because the sequence was invalid, or the server restarted.
     NO_RESUME,
     HELLO,
+
+    // Relationship related events
+    RELATIONSHIP,
     DUMMY
 }

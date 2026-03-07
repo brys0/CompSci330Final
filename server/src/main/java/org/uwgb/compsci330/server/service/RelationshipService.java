@@ -2,6 +2,7 @@ package org.uwgb.compsci330.server.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.uwgb.compsci330.server.dto.response.SafeRelationship;
 import org.uwgb.compsci330.server.entity.Relationship;
@@ -10,12 +11,17 @@ import org.uwgb.compsci330.server.entity.User;
 import org.uwgb.compsci330.server.exception.*;
 import org.uwgb.compsci330.server.repository.RelationshipRepository;
 import org.uwgb.compsci330.server.repository.UserRepository;
+import org.uwgb.compsci330.server.websocket.dto.out.relationship.RelationshipEvent;
+import org.uwgb.compsci330.server.websocket.dto.out.relationship.RelationshipEventType;
 
 import java.util.List;
 import java.util.Objects;
 
 @Service
 public class RelationshipService {
+    @Autowired
+    private ApplicationEventPublisher publisher;
+
     @Autowired
     private RelationshipRepository relationshipRepository;
 
@@ -53,7 +59,18 @@ public class RelationshipService {
             existingRelationship.setStatus(RelationshipStatus.ACCEPTED);
             relationshipRepository.save(existingRelationship);
 
-            return new SafeRelationship(existingRelationship);
+            final SafeRelationship relationship = new SafeRelationship(existingRelationship);
+
+            publisher.publishEvent(
+                    new RelationshipEvent(
+                            RelationshipEventType.RELATIONSHIP_ACCEPTED,
+                            relationship,
+                            userId,
+                            otherUser.getId()
+                    )
+            );
+
+            return relationship;
         }
 
         // Create new req
@@ -66,19 +83,36 @@ public class RelationshipService {
         final Relationship newReq = new Relationship(requester, otherUser);
         relationshipRepository.save(newReq);
 
-        return new SafeRelationship(newReq);
+        final SafeRelationship relationship = new SafeRelationship(newReq);
+        publisher.publishEvent(
+                new RelationshipEvent(
+                        RelationshipEventType.RELATIONSHIP_PENDING,
+                        relationship,
+                        userId,
+                        otherUser.getId()
+                )
+        );
+
+        return relationship;
     }
 
     @Transactional
     public void deleteRelationship(String userId, String otherUsername) {
         final List<Relationship> existingUserRelationships = relationshipRepository.findAllRelationships(userId);
 
-
         // Iterate over relationships
         for (Relationship relationship : existingUserRelationships) {
             // Relationship exists, we can delete it.
             if (relationship.getRequestee().getUsername().equals(otherUsername) || relationship.getRequester().getUsername().equals(otherUsername)) {
                 relationshipRepository.deleteById(relationship.getId());
+                publisher.publishEvent(
+                        new RelationshipEvent(
+                                RelationshipEventType.RELATIONSHIP_DELETED,
+                                new SafeRelationship(relationship),
+                                relationship.getRequester().getId(),
+                                relationship.getRequestee().getId()
+                        )
+                );
                 return;
             }
         }
