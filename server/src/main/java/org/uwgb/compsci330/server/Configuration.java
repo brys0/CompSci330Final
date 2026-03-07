@@ -8,6 +8,7 @@ public class Configuration {
     public static final int MIN_PASSWORD_LENGTH = 6;
     public static final int MIN_USERNAME_LENGTH = 2;
     public static final int MAX_USERNAME_LENGTH = 8;
+    public static final int MAX_RESUME_BUFFER = 250;
 
     // Should be base 64 encoded!!
     // Default value is base64 encoded "this-passsword-is-super-duper-secret-and-secure-totally-no-one-will-ever-figure-it-out" should really be set in env to something secure, and not visible publicly.
