@@ -50,7 +50,7 @@ public class UserService {
 
         userRepository.save(newUser);
 
-        return JwtUtil.generateToken(newUser.getId(), newUser.getUsername());
+        return JwtUtil.generateToken(newUser.getId());
     }
 
     public String login(LoginUserRequest loginRequest) {
@@ -60,7 +60,7 @@ public class UserService {
         // Password was incorrect.
         if (!BCrypt.checkpw(loginRequest.getPassword(), user.getPassword())) throw new UsernameOrPasswordIncorrectException();
 
-        return JwtUtil.generateToken(user.getId(), user.getUsername());
+        return JwtUtil.generateToken(user.getId());
     }
 
 

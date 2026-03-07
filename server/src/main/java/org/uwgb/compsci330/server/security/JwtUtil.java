@@ -9,13 +9,11 @@ import java.security.Key;
 import java.util.Date;
 
 public class JwtUtil {
-    public static String generateToken(String id, String username) {
+    public static String generateToken(String id) {
         Key key = Keys.hmacShaKeyFor(Configuration.JWT_SECRET.getBytes());
 
         return Jwts.builder()
                 .setSubject(id)
-                .claim("userId", id)
-                .claim("username", username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + Configuration.JWT_EXPIRATION_MS))
                 .signWith(key)
@@ -25,7 +23,7 @@ public class JwtUtil {
     public static String getUserIdFromToken(String token) {
         if (token.startsWith("Bearer ")) token = token.substring(7);
         Claims claims = validateToken(token);
-        return claims.get("userId", String.class);
+        return claims.getSubject();
     }
 
     public static Claims validateToken(String token) {
