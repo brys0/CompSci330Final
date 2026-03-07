@@ -2,19 +2,21 @@ package org.uwgb.compsci330.server.websocket.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.uwgb.compsci330.server.websocket.dto.InboundEvent;
 import org.uwgb.compsci330.server.websocket.dto.in.resume.RequestResumePayload;
 import org.uwgb.compsci330.server.websocket.dto.out.DummyEvent;
+import org.uwgb.compsci330.server.websocket.dto.out.relationship.RelationshipEvent;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-public class DefaultWebsocketHandler extends AbstractAuthenticatedWebsocketHandler {
-    private static final Logger log = LoggerFactory.getLogger(DefaultWebsocketHandler.class);
+public class WebsocketHandler extends AuthenticatedWebsocket {
+    private static final Logger log = LoggerFactory.getLogger(WebsocketHandler.class);
 
-    public DefaultWebsocketHandler(ObjectMapper objectMapper) {
+    public WebsocketHandler(ObjectMapper objectMapper) {
         super(objectMapper);
 
         // Test creating a ton of events.
@@ -25,6 +27,11 @@ public class DefaultWebsocketHandler extends AbstractAuthenticatedWebsocketHandl
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @EventListener
+    public void handleInternalRelationshipEvent(RelationshipEvent event) throws IOException {
+        this.sendEvent(event);
     }
 
     @Override

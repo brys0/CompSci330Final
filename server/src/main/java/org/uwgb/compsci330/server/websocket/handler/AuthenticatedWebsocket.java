@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AbstractAuthenticatedWebsocketHandler extends AbstractSequencedWebsocket {
-    public AbstractAuthenticatedWebsocketHandler(ObjectMapper objectMapper) {
+public abstract class AuthenticatedWebsocket extends SequencedWebsocket {
+    public AuthenticatedWebsocket(ObjectMapper objectMapper) {
         super(objectMapper);
     }
 
@@ -31,9 +31,7 @@ public class AbstractAuthenticatedWebsocketHandler extends AbstractSequencedWebs
         super.sendEventWithoutSequence(session, new AuthenticationRequiredEvent());
     }
 
-    public void onClientMessage(WebSocketSession session, InboundEvent event) {
-        // Method stub.
-    }
+    abstract void onClientMessage(WebSocketSession session, InboundEvent event);
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {

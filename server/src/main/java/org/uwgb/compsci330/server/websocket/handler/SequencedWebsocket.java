@@ -14,11 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class AbstractSequencedWebsocket extends AbstractWebsocketHandler {
+public abstract class SequencedWebsocket extends WebsocketHelper {
     private final AtomicInteger currentSq = new AtomicInteger(0);
-    private Map<String, Deque<OutboundEvent>> events = new ConcurrentHashMap<>();
+    private final Map<String, Deque<OutboundEvent>> events = new ConcurrentHashMap<>();
 
-    public AbstractSequencedWebsocket(ObjectMapper mapper) {
+    public SequencedWebsocket(ObjectMapper mapper) {
         super(mapper);
     }
 
@@ -46,11 +46,7 @@ public abstract class AbstractSequencedWebsocket extends AbstractWebsocketHandle
         super.sendEvent(session, event);
     }
 
-
-    public void sendEventToUser(OutboundEventWithIdentity event) throws IOException {
-        // stub
-        System.out.println("This method should be overridden to send the events to the proper user.");
-    }
+    abstract void sendEventToUser(OutboundEventWithIdentity event) throws IOException;
 
     public final void sendResume(long lastSequence, WebSocketSession session) throws IOException {
         String userId = (String) session.getAttributes().get("userId");

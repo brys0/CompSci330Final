@@ -8,7 +8,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
-import org.uwgb.compsci330.server.websocket.handler.DefaultWebsocketHandler;
+import org.uwgb.compsci330.server.websocket.handler.WebsocketHandler;
 import tools.jackson.databind.ObjectMapper;
 
 @Configuration
@@ -26,6 +26,6 @@ public class WebsocketConfiguration implements WebSocketConfigurer {
 
     @Bean
     public WebSocketHandler wsHandler() {
-        return new DefaultWebsocketHandler(objectMapper);
+        return new WebsocketHandler(objectMapper);
     }
 }
