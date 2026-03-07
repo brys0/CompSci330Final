@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox prefHeight="544.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox prefHeight="544.0" prefWidth="200.0">
+         <children>
+            <HBox prefHeight="30.0">
+               <children>
+                  <Pane HBox.hgrow="ALWAYS" />
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="/xml/pages/chat/sidebar-collapse.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor>
+                  </ImageView>
+               </children>
+            </HBox>
+            <ListView id="friendsList" prefHeight="514.0" VBox.vgrow="ALWAYS" />
+         </children>
+      </VBox>
+      <VBox maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+         <children>
+            <TextArea id="recipientDisplay" editable="false" prefHeight="50.0" prefWidth="297.0" VBox.vgrow="NEVER" />
+            <ListView maxHeight="1.7976931348623157E308" prefWidth="400.0" VBox.vgrow="ALWAYS" />
+         </children>
+      </VBox>
+   </children>
+</HBox>
