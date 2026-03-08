@@ -1,2 +1,2 @@
 rootProject.name = "CompSci330Final"
-include("server")
+include("server:annotation", "server:processor", "server")

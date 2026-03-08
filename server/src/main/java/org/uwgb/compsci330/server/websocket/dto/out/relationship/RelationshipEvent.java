@@ -4,6 +4,7 @@ import org.uwgb.compsci330.server.dto.response.SafeRelationship;
 import org.uwgb.compsci330.server.websocket.dto.out.OutboundEventType;
 import org.uwgb.compsci330.server.websocket.event.OutboundEventWithIdentity;
 
+import java.util.Collection;
 import java.util.List;
 
 public class RelationshipEvent extends OutboundEventWithIdentity {
@@ -11,7 +12,7 @@ public class RelationshipEvent extends OutboundEventWithIdentity {
         super(OutboundEventType.RELATIONSHIP, new RelationshipEventPayload(type, payload), users);
     }
 
-    public RelationshipEvent(RelationshipEventType type, SafeRelationship payload, List<String> users) {
+    public RelationshipEvent(RelationshipEventType type, SafeRelationship payload, Collection<String> users) {
         super(OutboundEventType.RELATIONSHIP, new RelationshipEventPayload(type, payload), users);
     }
 }

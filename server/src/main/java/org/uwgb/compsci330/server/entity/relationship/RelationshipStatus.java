@@ -1,4 +1,4 @@
-package org.uwgb.compsci330.server.entity;
+package org.uwgb.compsci330.server.entity.relationship;
 
 public enum RelationshipStatus {
     PENDING,

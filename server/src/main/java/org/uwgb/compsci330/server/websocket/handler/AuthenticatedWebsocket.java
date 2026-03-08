@@ -26,17 +26,18 @@ public abstract class AuthenticatedWebsocket extends SequencedWebsocket {
     private final Map<String, Set<WebSocketSession>> authenticatedUsers = new ConcurrentHashMap<>();
 
     @Override
-    public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
+    public void onConnection(@NonNull WebSocketSession session) throws Exception {
         this.authenticatedSessions.put(session.getId(), false);
         super.sendEventWithoutSequence(session, new AuthenticationRequiredEvent());
     }
 
+    abstract void onClientAuthenticated(WebSocketSession session);
     abstract void onClientMessage(WebSocketSession session, InboundEvent event);
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         deleteUserSession(session);
-        onClientSocketClosed(status);
+        onClientSocketClosed(session, status);
     }
 
     @Override
@@ -60,16 +61,18 @@ public abstract class AuthenticatedWebsocket extends SequencedWebsocket {
 
                     try {
                         final Claims claims = JwtUtil.validateToken(auth.token());
-                        final String userId = claims.get("userId", String.class);
+                        final String userId = claims.getSubject();
 
                         authenticatedSessions.put(session.getId(), true);
                         session.getAttributes().put("userId", userId);
                         this.addUserSession(userId, session);
 
                         super.sendEventWithoutSequence(session, new HelloEvent());
+                        this.onClientAuthenticated(session);
                     } catch (Exception e) {
                         // Authentication probably failed.
                         System.out.println("A session sent an invalid authentication token.");
+                        e.printStackTrace();
                         onServerSocketClosed(session, CloseStatus.POLICY_VIOLATION);
                     }
                 }

@@ -6,12 +6,13 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.uwgb.compsci330.server.Configuration;
+import org.uwgb.compsci330.server.annotation.SensitiveApi;
 import org.uwgb.compsci330.server.dto.request.LoginUserRequest;
 import org.uwgb.compsci330.server.dto.request.UserDeleteRequest;
 import org.uwgb.compsci330.server.dto.response.SafeUser;
-import org.uwgb.compsci330.server.entity.User;
+import org.uwgb.compsci330.server.entity.user.User;
 import org.uwgb.compsci330.server.dto.request.RegisterUserRequest;
-import org.uwgb.compsci330.server.exception.*;
+import org.uwgb.compsci330.server.entity.user.UserStatus;
 import org.uwgb.compsci330.server.exception.*;
 import org.uwgb.compsci330.server.repository.UserRepository;
 import org.uwgb.compsci330.server.security.JwtUtil;
@@ -91,5 +92,11 @@ public class UserService {
         } catch (RuntimeException e) {
             throw new UnauthorizedException();
         }
+    }
+
+    @Transactional
+    @SensitiveApi
+    public void setUserStatus(String userId, UserStatus status) {
+        userRepository.setUserStatus(userId, status);
     }
 }

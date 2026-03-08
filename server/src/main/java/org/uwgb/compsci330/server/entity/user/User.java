@@ -1,6 +1,7 @@
-package org.uwgb.compsci330.server.entity;
+package org.uwgb.compsci330.server.entity.user;
 
 import jakarta.persistence.*;
+import org.uwgb.compsci330.server.entity.relationship.Relationship;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +15,8 @@ public class User {
     private String username;
 
     private String password;
-    private int status;
+    @Enumerated(EnumType.ORDINAL)
+    private UserStatus status;
 
     // Outgoing relationships
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -30,7 +32,7 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.status = 0;
+        this.status = UserStatus.OFFLINE;
     }
 
     public User(String userId) {
@@ -61,11 +63,11 @@ public class User {
         this.password = password;
     }
 
-    public int getStatus() {
+    public UserStatus getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(UserStatus status) {
         this.status = status;
     }
 

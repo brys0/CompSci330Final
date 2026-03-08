@@ -1,7 +1,7 @@
-package org.uwgb.compsci330.server.entity;
+package org.uwgb.compsci330.server.entity.relationship;
 
 import jakarta.persistence.*;
-import org.uwgb.compsci330.server.dto.response.SafeUser;
+import org.uwgb.compsci330.server.entity.user.User;
 
 @Entity(name = "relationships")
 @Table(

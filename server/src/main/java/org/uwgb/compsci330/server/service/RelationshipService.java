@@ -4,10 +4,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.uwgb.compsci330.server.annotation.SensitiveApi;
 import org.uwgb.compsci330.server.dto.response.SafeRelationship;
-import org.uwgb.compsci330.server.entity.Relationship;
-import org.uwgb.compsci330.server.entity.RelationshipStatus;
-import org.uwgb.compsci330.server.entity.User;
+import org.uwgb.compsci330.server.entity.relationship.Relationship;
+import org.uwgb.compsci330.server.entity.relationship.RelationshipStatus;
+import org.uwgb.compsci330.server.entity.user.User;
 import org.uwgb.compsci330.server.exception.*;
 import org.uwgb.compsci330.server.repository.RelationshipRepository;
 import org.uwgb.compsci330.server.repository.UserRepository;
@@ -16,6 +17,8 @@ import org.uwgb.compsci330.server.websocket.dto.out.relationship.RelationshipEve
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class RelationshipService {
@@ -123,5 +126,17 @@ public class RelationshipService {
     @Transactional
     public List<SafeRelationship> getRelationships(String userId) {
         return relationshipRepository.findAllSafeRelationships(userId);
+    }
+
+    // Get all users for all relationships of a user, besides that users.
+    @Transactional
+    @SensitiveApi
+    public Set<String> getRelationshipPeers(String userId) {
+        List<SafeRelationship> relationships = this.getRelationships(userId);
+
+        return relationships.stream().map(rel -> Objects.equals(rel.getRequester().getId(), userId)
+                        ? rel.getRequestee().getId()
+                        : rel.getRequester().getId())
+        .collect(Collectors.toSet());
     }
 }

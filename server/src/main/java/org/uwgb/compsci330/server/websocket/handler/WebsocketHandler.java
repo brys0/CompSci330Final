@@ -13,20 +13,11 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-public class WebsocketHandler extends AuthenticatedWebsocket {
+public class WebsocketHandler extends StatusWebsocket {
     private static final Logger log = LoggerFactory.getLogger(WebsocketHandler.class);
 
     public WebsocketHandler(ObjectMapper objectMapper) {
         super(objectMapper);
-
-        // Test creating a ton of events.
-        try {
-            for (int i = 0; i < 10; i++) {
-                super.sendEvent(new DummyEvent("4165d6d4-4c9f-4af8-b517-3817ae8f0516")); // Dummy test user
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @EventListener
@@ -36,7 +27,6 @@ public class WebsocketHandler extends AuthenticatedWebsocket {
 
     @Override
     public void onServerSocketClosed(WebSocketSession session, CloseStatus status) {
-        System.out.println("A socket is closing forcefully.");
         try {
             session.close(status);
         } catch (IOException e) {
@@ -45,14 +35,7 @@ public class WebsocketHandler extends AuthenticatedWebsocket {
     }
 
     @Override
-    public void onClientSocketClosed(CloseStatus status) {
-        log.info("The socket was forcefully closed by the client.");
-    }
-
-    @Override
     public void onClientMessage(WebSocketSession session, InboundEvent event) {
-        System.out.println("Got a client message!");
-
         switch(event.type) {
             case REQUEST_RESUME -> {
                 final RequestResumePayload resumePayload = mapper.convertValue(event.payload, RequestResumePayload.class);

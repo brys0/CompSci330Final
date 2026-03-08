@@ -41,9 +41,9 @@ dependencies {
 //	implementation("org.springframework.security:spring-security-core:7.1.0-M2")
 	//implementation("org.springframework.boot:spring-boot-starter-actuator")
 	compileOnly("org.projectlombok:lombok")
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
 //	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 	annotationProcessor("org.projectlombok:lombok")
+
 
 	runtimeOnly("com.h2database:h2")
 
@@ -63,6 +63,11 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-webmvc-test")
 	// Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-test-autoconfigure
 	testImplementation("org.springframework.boot:spring-boot-test-autoconfigure:4.0.3")
+
+	// Custom annotation processor
+	annotationProcessor(project(":server:processor"))
+	compileOnly(project(":server:annotation"))
+
 }
 
 tasks.withType<Test> {
@@ -73,8 +78,12 @@ hibernate {
 	enhancement {
 		enableLazyInitialization = true
 		enableDirtyTracking = true
-		enableAssociationManagement = false
-		enableExtendedEnhancement = true
+		enableAssociationManagement = true
+		enableExtendedEnhancement = false
+
+
 	}
 }
+
+
 

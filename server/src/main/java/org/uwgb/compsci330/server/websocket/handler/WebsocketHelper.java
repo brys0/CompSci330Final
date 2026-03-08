@@ -19,12 +19,18 @@ public abstract class WebsocketHelper extends TextWebSocketHandler {
         session.sendMessage(new RawServerMessage(mapper, event).getTextMessage());
     }
 
+    abstract void onConnection(WebSocketSession session) throws Exception;
     abstract void onServerSocketClosed(WebSocketSession session, CloseStatus status);
-    abstract void onClientSocketClosed(CloseStatus status);
+    abstract void onClientSocketClosed(WebSocketSession session, CloseStatus status);
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        onClientSocketClosed(status);
+        onClientSocketClosed(session, status);
+    }
+
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        onConnection(session);
     }
 
     // Convert the message to an inbound event, if the client doesn't respect the rules, we simply force close the websocket.

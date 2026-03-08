@@ -1,8 +1,8 @@
 package org.uwgb.compsci330.server.dto.response;
 
-import org.uwgb.compsci330.server.entity.Relationship;
-import org.uwgb.compsci330.server.entity.RelationshipStatus;
-import org.uwgb.compsci330.server.entity.User;
+import org.uwgb.compsci330.server.entity.relationship.Relationship;
+import org.uwgb.compsci330.server.entity.relationship.RelationshipStatus;
+import org.uwgb.compsci330.server.entity.user.User;
 
 public class SafeRelationship {
     private SafeUser requester;

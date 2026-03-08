@@ -9,5 +9,8 @@ public enum OutboundEventType {
 
     // Relationship related events
     RELATIONSHIP,
+
+    // User status updated
+    STATUS,
     DUMMY
 }
