@@ -2,6 +2,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "4.0.2"
 	id("io.spring.dependency-management") version "1.1.7"
+	id("org.hibernate.orm") version "7.2.1.Final"
 }
 
 group = "org.uwgb.compsci330"
@@ -67,3 +68,13 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+hibernate {
+	enhancement {
+		enableLazyInitialization = true
+		enableDirtyTracking = true
+		enableAssociationManagement = false
+		enableExtendedEnhancement = true
+	}
+}
+
