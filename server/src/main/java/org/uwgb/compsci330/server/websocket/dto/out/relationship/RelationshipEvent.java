@@ -5,7 +5,6 @@ import org.uwgb.compsci330.server.websocket.dto.out.OutboundEventType;
 import org.uwgb.compsci330.server.websocket.event.OutboundEventWithIdentity;
 
 import java.util.Collection;
-import java.util.List;
 
 public class RelationshipEvent extends OutboundEventWithIdentity {
     public RelationshipEvent(RelationshipEventType type, SafeRelationship payload, String... users) {

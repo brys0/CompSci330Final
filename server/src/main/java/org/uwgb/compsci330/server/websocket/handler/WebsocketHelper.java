@@ -1,5 +1,6 @@
 package org.uwgb.compsci330.server.websocket.handler;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -24,12 +25,12 @@ public abstract class WebsocketHelper extends TextWebSocketHandler {
     abstract void onClientSocketClosed(WebSocketSession session, CloseStatus status);
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+    public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) {
         onClientSocketClosed(session, status);
     }
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+    public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
         onConnection(session);
     }
 

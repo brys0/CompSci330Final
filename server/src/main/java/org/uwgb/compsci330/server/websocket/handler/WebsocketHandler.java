@@ -7,14 +7,12 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.uwgb.compsci330.server.websocket.dto.InboundEvent;
 import org.uwgb.compsci330.server.websocket.dto.in.resume.RequestResumePayload;
-import org.uwgb.compsci330.server.websocket.dto.out.DummyEvent;
 import org.uwgb.compsci330.server.websocket.dto.out.relationship.RelationshipEvent;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
 public class WebsocketHandler extends StatusWebsocket {
-    private static final Logger log = LoggerFactory.getLogger(WebsocketHandler.class);
 
     public WebsocketHandler(ObjectMapper objectMapper) {
         super(objectMapper);

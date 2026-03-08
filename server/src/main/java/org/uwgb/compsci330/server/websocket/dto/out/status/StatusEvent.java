@@ -5,7 +5,6 @@ import org.uwgb.compsci330.server.websocket.dto.out.OutboundEventType;
 import org.uwgb.compsci330.server.websocket.event.OutboundEventWithIdentity;
 
 import java.util.Collection;
-import java.util.List;
 
 public class StatusEvent extends OutboundEventWithIdentity {
     public StatusEvent(String userId, UserStatus status, String... users) {

@@ -35,7 +35,7 @@ public abstract class AuthenticatedWebsocket extends SequencedWebsocket {
     abstract void onClientMessage(WebSocketSession session, InboundEvent event);
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+    public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) {
         deleteUserSession(session);
         onClientSocketClosed(session, status);
     }

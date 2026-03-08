@@ -5,17 +5,19 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.uwgb.compsci330.server.Configuration;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 
 public class JwtUtil {
+    private final static Key key = Keys.hmacShaKeyFor(Configuration.JWT_SECRET.getBytes());
     public static String generateToken(String id) {
-        Key key = Keys.hmacShaKeyFor(Configuration.JWT_SECRET.getBytes());
+
 
         return Jwts.builder()
-                .setSubject(id)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + Configuration.JWT_EXPIRATION_MS))
+                .subject(id)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + Configuration.JWT_EXPIRATION_MS))
                 .signWith(key)
                 .compact();
     }
@@ -27,11 +29,11 @@ public class JwtUtil {
     }
 
     public static Claims validateToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(Configuration.JWT_SECRET.getBytes())
+        return Jwts.parser()
+                .verifyWith((SecretKey) key)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
 
     }
 }
