@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import org.uwgb.compsci330.server.dto.response.ErrorResponse;
+import org.uwgb.compsci330.common.model.response.ErrorResponse;
 import org.uwgb.compsci330.server.exception.UnauthorizedException;
 import tools.jackson.databind.ObjectMapper;
 
@@ -27,7 +27,7 @@ public class JWTAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 .write(
                     objectMapper.writeValueAsString(
                             new ErrorResponse(
-                                    new UnauthorizedException().getMessage()
+                                    new UnauthorizedException()
                             )
                     )
                 );

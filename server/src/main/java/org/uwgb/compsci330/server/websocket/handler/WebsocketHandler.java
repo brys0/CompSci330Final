@@ -5,9 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
-import org.uwgb.compsci330.server.websocket.dto.InboundEvent;
-import org.uwgb.compsci330.server.websocket.dto.in.resume.RequestResumePayload;
-import org.uwgb.compsci330.server.websocket.dto.out.relationship.RelationshipEvent;
+import org.uwgb.compsci330.common.websocket.model.InboundEvent;
+import org.uwgb.compsci330.common.websocket.model.in.resume.RequestResumePayload;
+import org.uwgb.compsci330.common.websocket.model.out.message.CreateMessageEvent;
+import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipEvent;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -20,6 +21,11 @@ public class WebsocketHandler extends StatusWebsocket {
 
     @EventListener
     public void handleInternalRelationshipEvent(RelationshipEvent event) throws IOException {
+        this.sendEvent(event);
+    }
+
+    @EventListener
+    public void handleInternalCreateMessageEvent(CreateMessageEvent event) throws IOException {
         this.sendEvent(event);
     }
 

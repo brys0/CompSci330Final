@@ -4,16 +4,19 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.uwgb.compsci330.common.model.response.relationship.RelationshipStatus;
+import org.uwgb.compsci330.common.model.response.relationship.SafeRelationship;
+import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipEvent;
+import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipEventType;
+import org.uwgb.compsci330.server.annotation.FragileSensitiveApi;
 import org.uwgb.compsci330.server.annotation.SensitiveApi;
-import org.uwgb.compsci330.server.dto.response.SafeRelationship;
 import org.uwgb.compsci330.server.entity.relationship.Relationship;
-import org.uwgb.compsci330.server.entity.relationship.RelationshipStatus;
 import org.uwgb.compsci330.server.entity.user.User;
 import org.uwgb.compsci330.server.exception.*;
+import org.uwgb.compsci330.server.mapper.MessageMapper;
+import org.uwgb.compsci330.server.mapper.RelationshipMapper;
 import org.uwgb.compsci330.server.repository.RelationshipRepository;
 import org.uwgb.compsci330.server.repository.UserRepository;
-import org.uwgb.compsci330.server.websocket.dto.out.relationship.RelationshipEvent;
-import org.uwgb.compsci330.server.websocket.dto.out.relationship.RelationshipEventType;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +34,14 @@ public class RelationshipService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ConversationService conversationService;
+
+    @Autowired
+    private MessageService messageService;
+
+    @Transactional
+    @FragileSensitiveApi
     public SafeRelationship createRelationship(String userId, String otherUsername) {
         final User otherUser = userRepository
                 .findByUsername(otherUsername)
@@ -38,12 +49,22 @@ public class RelationshipService {
                 .findFirst()
                 .orElseThrow(() -> new InvalidFriendRequestException(otherUsername)); // User with that username must not exist.
 
+        // A user is trying to friend the "System" user, bad!
+        if (otherUser.isSystemUser()) throw new ReservedUsernameException();
+
         // A user is trying to friend themselves :(
         if (userId.equals(otherUser.getId())) throw new SelfFriendException();
 
         Relationship existingRelationship = relationshipRepository
                 .findRelationshipByUserAndOtherUser(userId, otherUser.getId())
                 .orElse(null);
+
+        // Create new req
+        final User requester = userRepository
+                .findUserById(userId)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new InvalidFriendRequestException(userId));
 
         if (existingRelationship != null) {
             // If a relationship already exists.
@@ -61,8 +82,9 @@ public class RelationshipService {
             // Friendship should be accepted.
             existingRelationship.setStatus(RelationshipStatus.ACCEPTED);
             relationshipRepository.save(existingRelationship);
+            final SafeRelationship relationship = RelationshipMapper.toSafe(existingRelationship);
 
-            final SafeRelationship relationship = new SafeRelationship(existingRelationship);
+            conversationService.createConversation(Set.of(requester, otherUser));
 
             publisher.publishEvent(
                     new RelationshipEvent(
@@ -76,17 +98,11 @@ public class RelationshipService {
             return relationship;
         }
 
-        // Create new req
-        final User requester = userRepository
-                .findUserById(userId)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new InvalidFriendRequestException(userId));
 
         final Relationship newReq = new Relationship(requester, otherUser);
         relationshipRepository.save(newReq);
 
-        final SafeRelationship relationship = new SafeRelationship(newReq);
+        final SafeRelationship relationship = RelationshipMapper.toSafe(newReq);
         publisher.publishEvent(
                 new RelationshipEvent(
                         RelationshipEventType.RELATIONSHIP_PENDING,
@@ -111,7 +127,7 @@ public class RelationshipService {
                 publisher.publishEvent(
                         new RelationshipEvent(
                                 RelationshipEventType.RELATIONSHIP_DELETED,
-                                new SafeRelationship(relationship),
+                                RelationshipMapper.toSafe(relationship),
                                 relationship.getRequester().getId(),
                                 relationship.getRequestee().getId()
                         )
@@ -125,7 +141,10 @@ public class RelationshipService {
 
     @Transactional
     public List<SafeRelationship> getRelationships(String userId) {
-        return relationshipRepository.findAllSafeRelationships(userId);
+        return relationshipRepository.findAllRelationships(userId)
+                .stream()
+                .map(RelationshipMapper::toSafe)
+                .toList();
     }
 
     // Get all users for all relationships of a user, besides that users.

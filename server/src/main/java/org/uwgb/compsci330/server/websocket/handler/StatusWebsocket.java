@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
+import org.uwgb.compsci330.common.model.response.user.UserStatus;
+import org.uwgb.compsci330.common.websocket.model.out.status.StatusEvent;
 import org.uwgb.compsci330.server.annotation.FragileSensitiveApi;
-import org.uwgb.compsci330.server.entity.user.UserStatus;
 import org.uwgb.compsci330.server.service.RelationshipService;
 import org.uwgb.compsci330.server.service.UserService;
-import org.uwgb.compsci330.server.websocket.dto.out.status.StatusEvent;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;

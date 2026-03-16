@@ -1,0 +1,7 @@
+package org.uwgb.compsci330.server.exception;
+
+public class InvalidConversationException extends RuntimeException {
+    public InvalidConversationException(String friendId) {
+        super(String.format("A conversation with \"%s\" could not be found.", friendId));
+    }
+}

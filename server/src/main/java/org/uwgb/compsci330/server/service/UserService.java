@@ -5,17 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.uwgb.compsci330.server.Configuration;
+import org.uwgb.compsci330.common.model.response.user.SafeUser;
+import org.uwgb.compsci330.common.model.response.user.UserStatus;
+import org.uwgb.compsci330.server.ServerConfiguration;
 import org.uwgb.compsci330.server.annotation.SensitiveApi;
 import org.uwgb.compsci330.server.dto.request.LoginUserRequest;
 import org.uwgb.compsci330.server.dto.request.UserDeleteRequest;
-import org.uwgb.compsci330.server.dto.response.SafeUser;
 import org.uwgb.compsci330.server.entity.user.User;
 import org.uwgb.compsci330.server.dto.request.RegisterUserRequest;
-import org.uwgb.compsci330.server.entity.user.UserStatus;
 import org.uwgb.compsci330.server.exception.*;
+import org.uwgb.compsci330.server.mapper.UserMapper;
 import org.uwgb.compsci330.server.repository.UserRepository;
 import org.uwgb.compsci330.server.security.JwtUtil;
+
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -31,10 +34,12 @@ public class UserService {
         final int usernameLen = userRequest.getUsername().length();
 
         // Username is too short.
-        if (usernameLen < Configuration.MIN_USERNAME_LENGTH) {
+        if (usernameLen < ServerConfiguration.MIN_USERNAME_LENGTH) {
             throw new UsernameTooShortException(username);
-        } else if (usernameLen > Configuration.MAX_USERNAME_LENGTH) {  // Username is too long.
+        } else if (usernameLen > ServerConfiguration.MAX_USERNAME_LENGTH) {  // Username is too long.
             throw new UsernameTooLongException(username);
+        } else if (Objects.equals(username, ServerConfiguration.SYSTEM_USER)) {
+            throw new ReservedUsernameException();
         }
 
         // Check if user with that username already exists, if it does escape early.
@@ -42,7 +47,7 @@ public class UserService {
             throw new UserAlreadyExistsException(userRequest.getUsername());
         }
         // Next check password len
-        if (userRequest.getPassword().length() < Configuration.MIN_PASSWORD_LENGTH) throw new PasswordTooShortException();
+        if (userRequest.getPassword().length() < ServerConfiguration.MIN_PASSWORD_LENGTH) throw new PasswordTooShortException();
 
         User newUser = new User(
                 username,
@@ -58,6 +63,8 @@ public class UserService {
         User user = userRepository.findByUsername(loginRequest.getUsername())
                 .orElseThrow(UsernameOrPasswordIncorrectException::new);
 
+        if (Objects.equals(loginRequest.getUsername(), ServerConfiguration.SYSTEM_USER)) throw new ReservedUsernameException();
+
         // Password was incorrect.
         if (!BCrypt.checkpw(loginRequest.getPassword(), user.getPassword())) throw new UsernameOrPasswordIncorrectException();
 
@@ -71,7 +78,7 @@ public class UserService {
             User user = userRepository.findUserById(userId)
                     .orElseThrow(UnauthorizedException::new);
 
-            return new SafeUser(user);
+            return UserMapper.toSafe(user);
         } catch (Exception e) {
             throw new UnauthorizedException();
         }

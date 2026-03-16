@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.uwgb.compsci330.server.dto.response.ErrorResponse;
-import org.uwgb.compsci330.server.dto.response.SafeRelationship;
+import org.uwgb.compsci330.common.model.response.ErrorResponse;
+import org.uwgb.compsci330.common.model.response.relationship.SafeRelationship;
 import org.uwgb.compsci330.server.exception.*;
 import org.uwgb.compsci330.server.service.RelationshipService;
 
@@ -168,30 +168,36 @@ public class RelationshipController {
     @ExceptionHandler(value = InvalidFriendRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidFriendRequestException(InvalidFriendRequestException ex) {
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex);
     }
 
     @ExceptionHandler(value = ExistingRelationshipException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleExistingRelationshipException(ExistingRelationshipException ex) {
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex);
     }
 
     @ExceptionHandler(value = OutgoingRequestAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleOutgoingRequestAlreadyExistsException(OutgoingRequestAlreadyExistsException ex) {
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex);
     }
 
     @ExceptionHandler(value = SelfFriendException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleSelfFriendException(SelfFriendException ex) {
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex);
     }
 
     @ExceptionHandler(value = RelationshipDoesNotExistException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleRelationshipDoesNotExistException(RelationshipDoesNotExistException ex) {
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex);
+    }
+
+    @ExceptionHandler(value = ReservedUsernameException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleFriendingReservedSystemUser(ReservedUsernameException ex) {
+        return new ErrorResponse(ex);
     }
 }

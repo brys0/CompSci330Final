@@ -5,12 +5,12 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import org.uwgb.compsci330.common.websocket.model.InboundEvent;
+import org.uwgb.compsci330.common.websocket.model.event.OutboundEventWithIdentity;
+import org.uwgb.compsci330.common.websocket.model.in.AuthenticationRequiredEvent;
+import org.uwgb.compsci330.common.websocket.model.in.authenticate.AuthenticateEventPayload;
+import org.uwgb.compsci330.common.websocket.model.out.HelloEvent;
 import org.uwgb.compsci330.server.security.JwtUtil;
-import org.uwgb.compsci330.server.websocket.dto.InboundEvent;
-import org.uwgb.compsci330.server.websocket.dto.in.AuthenticationRequiredEvent;
-import org.uwgb.compsci330.server.websocket.dto.in.authenticate.AuthenticateEventPayload;
-import org.uwgb.compsci330.server.websocket.dto.out.HelloEvent;
-import org.uwgb.compsci330.server.websocket.event.OutboundEventWithIdentity;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;

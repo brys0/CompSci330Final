@@ -22,7 +22,7 @@ public class APIServerApplication {
 	public OpenAPI openAPI() {
 		return new OpenAPI().info(new Info()
 				.title("Chat Server API")
-				.version(Configuration.SERVER_VERSION)
+				.version(ServerConfiguration.SERVER_VERSION)
 				.description("Generated documentation for the chat server api"));
 	}
 

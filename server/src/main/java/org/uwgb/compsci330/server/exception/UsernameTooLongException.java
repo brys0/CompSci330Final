@@ -1,9 +1,9 @@
 package org.uwgb.compsci330.server.exception;
 
-import org.uwgb.compsci330.server.Configuration;
+import org.uwgb.compsci330.server.ServerConfiguration;
 
 public class UsernameTooLongException extends RuntimeException {
     public UsernameTooLongException(String username) {
-        super(String.format("Username '%s' must be longer than %d characters.", username, Configuration.MAX_USERNAME_LENGTH));
+        super(String.format("Username '%s' must be longer than %d characters.", username, ServerConfiguration.MAX_USERNAME_LENGTH));
     }
 }

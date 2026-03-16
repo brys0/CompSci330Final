@@ -4,8 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.uwgb.compsci330.common.model.response.user.UserStatus;
 import org.uwgb.compsci330.server.entity.user.User;
-import org.uwgb.compsci330.server.entity.user.UserStatus;
 
 import java.util.Optional;
 

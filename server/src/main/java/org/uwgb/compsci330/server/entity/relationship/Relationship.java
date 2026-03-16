@@ -1,6 +1,7 @@
 package org.uwgb.compsci330.server.entity.relationship;
 
 import jakarta.persistence.*;
+import org.uwgb.compsci330.common.model.response.relationship.RelationshipStatus;
 import org.uwgb.compsci330.server.entity.user.User;
 
 @Entity(name = "relationships")

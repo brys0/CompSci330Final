@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.uwgb.compsci330.server.APIServerApplication;
+import org.uwgb.compsci330.server.ServerConfiguration;
 import org.uwgb.compsci330.server.dto.request.LoginUserRequest;
 import org.uwgb.compsci330.server.dto.request.RegisterUserRequest;
 import org.uwgb.compsci330.server.dto.request.UserDeleteRequest;
@@ -115,6 +116,19 @@ public class UserRestControllerIntegrationTest {
     }
 
     @Test
+    public void registerUser_whenReservedUsername_thenReturns400() throws Exception {
+        RegisterUserRequest req = new RegisterUserRequest(ServerConfiguration.SYSTEM_USER, "password12345");
+
+        mvc.perform(post("/users/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req))
+                )
+                .andDo(print())
+                .andExpect(status().is(400))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
     public void loginUser_whenValid_thenReturns200() throws Exception {
         createUser("test", "password12345");
 
@@ -158,6 +172,21 @@ public class UserRestControllerIntegrationTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400));
     }
+    @Test
+    public void loginUser_whenReservedUsername_thenReturns400() throws Exception {
+        createUser("test", "password12345");
+
+        LoginUserRequest req = new LoginUserRequest(ServerConfiguration.SYSTEM_USER, "password12345");
+
+        mvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req))
+                )
+                .andDo(print())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(400));
+    }
+
 
     @Test
     public void getUserMe_whenValid_thenReturns200() throws Exception {

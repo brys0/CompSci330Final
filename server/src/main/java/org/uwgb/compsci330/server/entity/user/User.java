@@ -1,9 +1,13 @@
 package org.uwgb.compsci330.server.entity.user;
 
 import jakarta.persistence.*;
+import org.uwgb.compsci330.common.model.response.user.UserStatus;
+import org.uwgb.compsci330.server.ServerConfiguration;
+import org.uwgb.compsci330.server.entity.conversation.Conversation;
 import org.uwgb.compsci330.server.entity.relationship.Relationship;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity(name = "users")
@@ -26,7 +30,16 @@ public class User {
     @OneToMany(mappedBy = "requestee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Relationship> receivedRequests = new HashSet<>();
 
+
+    @ManyToMany(mappedBy = "participants", fetch = FetchType.LAZY)
+    private Set<Conversation> conversations = new HashSet<>();
     public User() {
+    }
+
+    public User(String username, String password, UserStatus status) {
+        this.username = username;
+        this.password = password;
+        this.status = status;
     }
 
     public User(String username, String password) {
@@ -85,5 +98,13 @@ public class User {
 
     public void setSentRequests(Set<Relationship> sentRequests) {
         this.sentRequests = sentRequests;
+    }
+
+    public boolean isSystemUser() {
+        return Objects.equals(this.username, ServerConfiguration.SYSTEM_USER);
+    }
+
+    public static User createSystemUser() {
+        return new User(ServerConfiguration.SYSTEM_USER, "", UserStatus.ONLINE);
     }
 }

@@ -5,8 +5,8 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import org.uwgb.compsci330.server.websocket.dto.InboundEvent;
-import org.uwgb.compsci330.server.websocket.dto.OutboundEvent;
+import org.uwgb.compsci330.common.websocket.model.InboundEvent;
+import org.uwgb.compsci330.common.websocket.model.OutboundEvent;
 import org.uwgb.compsci330.server.websocket.raw.RawServerMessage;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
@@ -39,6 +39,7 @@ public abstract class WebsocketHelper extends TextWebSocketHandler {
         try {
             return mapper.readValue(message.getPayload(), value);
         } catch (JacksonException e) {
+            e.printStackTrace();
             System.out.println("Jackson exception");
             onServerSocketClosed(session, CloseStatus.PROTOCOL_ERROR);
             return null;

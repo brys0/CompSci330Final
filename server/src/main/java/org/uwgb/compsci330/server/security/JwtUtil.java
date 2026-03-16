@@ -3,21 +3,21 @@ package org.uwgb.compsci330.server.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.uwgb.compsci330.server.Configuration;
+import org.uwgb.compsci330.server.ServerConfiguration;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 
 public class JwtUtil {
-    private final static Key key = Keys.hmacShaKeyFor(Configuration.JWT_SECRET.getBytes());
+    private final static Key key = Keys.hmacShaKeyFor(ServerConfiguration.JWT_SECRET.getBytes());
     public static String generateToken(String id) {
 
 
         return Jwts.builder()
                 .subject(id)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + Configuration.JWT_EXPIRATION_MS))
+                .expiration(new Date(System.currentTimeMillis() + ServerConfiguration.JWT_EXPIRATION_MS))
                 .signWith(key)
                 .compact();
     }

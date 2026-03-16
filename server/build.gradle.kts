@@ -26,6 +26,9 @@ repositories {
 }
 
 dependencies {
+	// Common components
+	implementation(project(":common"))
+
 	// Springboot dependencies
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")

@@ -11,14 +11,12 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.uwgb.compsci330.common.model.response.relationship.SafeRelationship;
+import org.uwgb.compsci330.common.model.response.user.SafeUser;
 import org.uwgb.compsci330.server.APIServerApplication;
+import org.uwgb.compsci330.server.ServerConfiguration;
 import org.uwgb.compsci330.server.dto.request.RegisterUserRequest;
-import org.uwgb.compsci330.server.dto.response.SafeRelationship;
-import org.uwgb.compsci330.server.dto.response.SafeUser;
-import org.uwgb.compsci330.server.exception.ExistingRelationshipException;
-import org.uwgb.compsci330.server.exception.InvalidFriendRequestException;
-import org.uwgb.compsci330.server.exception.OutgoingRequestAlreadyExistsException;
-import org.uwgb.compsci330.server.exception.SelfFriendException;
+import org.uwgb.compsci330.server.exception.*;
 import org.uwgb.compsci330.server.security.JwtUtil;
 import org.uwgb.compsci330.server.service.RelationshipService;
 import org.uwgb.compsci330.server.service.UserService;
@@ -138,6 +136,20 @@ public class RelationshipRestControllerIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(new SelfFriendException().getMessage()))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    public void createRelationship_whenSystemUser_thenReturns400() throws Exception {
+        final String requester = createTestUser("alice");
+
+        mvc.perform(post(String.format("/users/@me/relationships/%s", ServerConfiguration.SYSTEM_USER))
+                        .header("Authorization", requester)
+                )
+
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(new ReservedUsernameException().getMessage()))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 

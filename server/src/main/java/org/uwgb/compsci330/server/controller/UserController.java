@@ -11,12 +11,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.uwgb.compsci330.common.model.response.ErrorResponse;
+import org.uwgb.compsci330.common.model.response.user.SafeUser;
 import org.uwgb.compsci330.server.dto.request.LoginUserRequest;
 import org.uwgb.compsci330.server.dto.request.RegisterUserRequest;
 import org.uwgb.compsci330.server.dto.request.UserDeleteRequest;
-import org.uwgb.compsci330.server.dto.response.ErrorResponse;
-import org.uwgb.compsci330.server.dto.response.SafeUser;
-import org.uwgb.compsci330.server.exception.*;
 import org.uwgb.compsci330.server.exception.*;
 import org.uwgb.compsci330.server.service.UserService;
 
@@ -167,42 +166,48 @@ public class UserController {
     @ExceptionHandler(value = UserAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex);
     }
 
     @ExceptionHandler(value = PasswordTooShortException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handlePasswordTooShortException(PasswordTooShortException ex) {
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex);
+    }
+
+    @ExceptionHandler(value = ReservedUsernameException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleReservedUsernameException(ReservedUsernameException ex) {
+        return new ErrorResponse(ex);
     }
 
     @ExceptionHandler(value = UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleUnauthorizedException(UnauthorizedException ex) {
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex);
     }
 
     @ExceptionHandler(value = UsernameOrPasswordIncorrectException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUsernameOrPasswordIncorrectException(UsernameOrPasswordIncorrectException ex) {
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex);
     }
 
     @ExceptionHandler(value = UsernameTooLongException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUsernameTooLongException(UsernameTooLongException ex) {
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex);
     }
 
     @ExceptionHandler(value = UsernameTooShortException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUsernameTooShortException(UsernameTooShortException ex) {
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex);
     }
 
     @ExceptionHandler(value = PasswordIncorrectForUserDeletionException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handlePasswordIncorrectForDeletionException(PasswordIncorrectForUserDeletionException ex) {
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex);
     }
 }

@@ -1,10 +1,10 @@
 package org.uwgb.compsci330.server.websocket.handler;
 
 import org.springframework.web.socket.WebSocketSession;
-import org.uwgb.compsci330.server.Configuration;
-import org.uwgb.compsci330.server.websocket.dto.OutboundEvent;
-import org.uwgb.compsci330.server.websocket.dto.out.NoResumeEvent;
-import org.uwgb.compsci330.server.websocket.event.OutboundEventWithIdentity;
+import org.uwgb.compsci330.common.websocket.model.OutboundEvent;
+import org.uwgb.compsci330.common.websocket.model.event.OutboundEventWithIdentity;
+import org.uwgb.compsci330.common.websocket.model.out.NoResumeEvent;
+import org.uwgb.compsci330.server.ServerConfiguration;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -29,10 +29,10 @@ public abstract class SequencedWebsocket extends WebsocketHelper {
         // Add event to queue
         for (String userId : event.getUsers()) {
             Deque<OutboundEvent> queue = events.computeIfAbsent(userId,
-                    k -> new LinkedBlockingDeque<>(Configuration.MAX_RESUME_BUFFER));
+                    k -> new LinkedBlockingDeque<>(ServerConfiguration.MAX_RESUME_BUFFER));
 
             synchronized (queue) {
-                if (queue.size() >= Configuration.MAX_RESUME_BUFFER) {
+                if (queue.size() >= ServerConfiguration.MAX_RESUME_BUFFER) {
                     queue.removeFirst(); // Evict oldest
                 }
                 queue.addLast(event);
