@@ -8,24 +8,26 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="10.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="10.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.uwgb.compsci330.frontend.loginController">
    <children>
       <Label alignment="CENTER" text="NAME HERE">
          <font>
             <Font size="40.0" />
          </font>
          <VBox.margin>
-            <Insets bottom="50.0" />
+            <Insets />
          </VBox.margin>
       </Label>
-      <TextField maxWidth="300.0" promptText="Username" />
-      <PasswordField maxWidth="300.0" promptText="Password" />
-      <Button maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" text="Sign In">
+      <TextField fx:id="username" maxWidth="300.0" promptText="Username">
+         <VBox.margin>
+            <Insets top="50.0" />
+         </VBox.margin></TextField>
+      <PasswordField fx:id="password" maxWidth="300.0" promptText="Password" />
+      <Button fx:id="signInButton" maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" onAction="#signIn" text="Sign In">
          <VBox.margin>
             <Insets top="10.0" />
          </VBox.margin>
       </Button>
-      <Button maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" text="Sign Up" />
+      <Button fx:id="signUpButton" maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" onAction="#signUp" text="Sign Up" />
    </children>
 </VBox>
