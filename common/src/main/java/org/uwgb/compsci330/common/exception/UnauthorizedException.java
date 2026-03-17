@@ -1,4 +1,4 @@
-package org.uwgb.compsci330.server.exception;
+package org.uwgb.compsci330.common.exception;
 
 public class UnauthorizedException extends RuntimeException {
     public UnauthorizedException() {

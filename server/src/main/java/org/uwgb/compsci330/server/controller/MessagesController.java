@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.uwgb.compsci330.common.exception.*;
 import org.uwgb.compsci330.common.model.response.ErrorResponse;
 import org.uwgb.compsci330.common.model.response.message.SafeMessage;
 import org.uwgb.compsci330.server.dto.request.CreateMessageRequest;
-import org.uwgb.compsci330.server.exception.*;
 import org.uwgb.compsci330.server.service.ConversationService;
 
 import java.util.List;

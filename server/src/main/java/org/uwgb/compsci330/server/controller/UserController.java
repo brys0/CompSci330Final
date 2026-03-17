@@ -11,12 +11,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.uwgb.compsci330.common.exception.*;
 import org.uwgb.compsci330.common.model.response.ErrorResponse;
 import org.uwgb.compsci330.common.model.response.user.SafeUser;
 import org.uwgb.compsci330.server.dto.request.LoginUserRequest;
 import org.uwgb.compsci330.server.dto.request.RegisterUserRequest;
 import org.uwgb.compsci330.server.dto.request.UserDeleteRequest;
-import org.uwgb.compsci330.server.exception.*;
 import org.uwgb.compsci330.server.service.UserService;
 
 @RestController

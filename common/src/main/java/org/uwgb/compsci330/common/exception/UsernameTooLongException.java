@@ -1,4 +1,4 @@
-package org.uwgb.compsci330.server.exception;
+package org.uwgb.compsci330.common.exception;
 
 import org.uwgb.compsci330.server.ServerConfiguration;
 
