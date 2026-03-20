@@ -1,9 +1,11 @@
 package org.uwgb.compsci330.client_sdk;
 
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.OkHttpClient;
-import tools.jackson.databind.ObjectMapper;
+import okhttp3.Request;
 
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +28,13 @@ public class ClientConfig {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
+                .addInterceptor(chain -> {
+                    final Request request = chain.request().newBuilder()
+                            .header("Content-Type", "application/json")
+                            .build();
+
+                    return chain.proceed(request);
+                })
                 .build();
         this.objectMapper = new ObjectMapper();
     }

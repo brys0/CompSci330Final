@@ -18,6 +18,11 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     implementation(project("client_sdk"))
+
+
+    // Getter & setter generation
+    compileOnly("org.projectlombok:lombok:1.18.44")
+    annotationProcessor("org.projectlombok:lombok:1.18.44")
 }
 
 tasks.test {

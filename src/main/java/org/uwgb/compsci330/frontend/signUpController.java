@@ -5,8 +5,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import org.uwgb.compsci330.client_sdk.Client;
+import org.uwgb.compsci330.frontend.client.ClientSingleton;
 
 public class signUpController {
+    private final Client client = ClientSingleton.getInstance().getClient();
 
     @FXML
     private PasswordField password;
@@ -23,6 +26,7 @@ public class signUpController {
     @FXML
     void confirmSignUp(ActionEvent event) {
 
+        //client.registerUser();
     }
 
 }

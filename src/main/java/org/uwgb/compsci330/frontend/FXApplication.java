@@ -21,6 +21,7 @@ public class FXApplication extends Application {
         ).load();
         Scene login = new Scene(loginFXML);
 
+
         stage.setScene(login);
 
         stage.show();

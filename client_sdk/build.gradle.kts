@@ -30,10 +30,10 @@ dependencies {
     // HTTP Client
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
 
-    // Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-core
-    implementation("tools.jackson.core:jackson-core:3.1.0")
-    // Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
-    implementation("com.fasterxml.jackson.core:jackson-annotations:3.0-rc5")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.18.0")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.18.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.0")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.0")
 
 }
 

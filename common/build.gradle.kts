@@ -34,6 +34,9 @@ dependencies {
     implementation("tools.jackson.core:jackson-core:3.1.0")
     // Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
     implementation("com.fasterxml.jackson.core:jackson-annotations:3.0-rc5")
+
+    // Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-databind
+    implementation("tools.jackson.core:jackson-databind:3.1.0")
 }
 
 tasks.test {

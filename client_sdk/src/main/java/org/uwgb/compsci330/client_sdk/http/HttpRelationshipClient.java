@@ -1,5 +1,6 @@
 package org.uwgb.compsci330.client_sdk.http;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -76,7 +77,7 @@ public class HttpRelationshipClient extends Entity {
         }
     }
 
-    private void handleRelationshipResponseErrors(String body, String username) {
+    private void handleRelationshipResponseErrors(String body, String username) throws JsonProcessingException {
         final ErrorResponse errorResponse = config.getObjectMapper().readValue(body, ErrorResponse.class);
         final String errorType = errorResponse.getType();
 
