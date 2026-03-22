@@ -1,0 +1,46 @@
+.primary {
+    -fx-background-color:  #19191c;
+}
+
+.primaryText {
+    -fx-font-size: 32px;
+    -fx-text-fill:  #e0e0e0;
+}
+
+.secondary {
+     -fx-background-color:  #0f0f0f;
+     -fx-text-fill:  #e0e0e0;
+}
+
+.popout {
+    -fx-border-style: solid;
+    -fx-border-width: 5;
+}
+
+.main {
+    -fx-border-style: solid;
+    -fx-border-width: 3 7 7 0;
+    -fx-border-color: #26282b #19191c #0f0f0f #26282b;
+}
+
+.chat {
+    -fx-background-color:  #232327;
+}
+
+#windowBar Button {
+    -fx-background-color: transparent;
+}
+
+ScrollPane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+#chatMenu ToolBar {
+    -fx-background-color: transparent;
+}
+
+#chatMenu HBox Button {
+    -fx-background-color: transparent;
+}

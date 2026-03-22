@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.effect.ColorAdjust?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<StackPane styleClass="popout" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.uwgb.compsci330.frontend.SettingsController">
+    <children>
+        <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="10.0" styleClass="primary">
+            <children>
+                <Label styleClass="primaryText" text="Settings">
+                    <font>
+                        <Font size="24.0" />
+                    </font>
+                </Label>
+                <Pane prefHeight="200.0" prefWidth="200.0" />
+                <Button fx:id="signOutButton" mnemonicParsing="false" onAction="#signOutButtonPress" styleClass="secondary" text="Sign Out" />
+            </children>
+        </VBox>
+        <ToolBar fx:id="windowBar" maxHeight="32.0" minHeight="32.0" nodeOrientation="RIGHT_TO_LEFT" onMouseDragged="#windowBarMouseDragged" onMousePressed="#windowBarMousePressed" styleClass="primary" StackPane.alignment="TOP_CENTER">
+            <items>
+                <Button fx:id="closeButton" maxHeight="32.0" maxWidth="30.0" minHeight="32.0" minWidth="30.0" mnemonicParsing="false" onAction="#closeButtonPress">
+                    <font>
+                        <Font name="SansSerif Bold" />
+                    </font>
+                    <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../../../images/close.png" />
+                            </image>
+                            <effect>
+                                <ColorAdjust brightness="0.75" contrast="-1.0" />
+                            </effect>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="minimizeButton" maxHeight="32.0" maxWidth="30.0" minHeight="32.0" minWidth="30.0" mnemonicParsing="false" onAction="#minimizeButtonPress">
+                    <font>
+                        <Font name="SansSerif Bold" size="12.0" />
+                    </font>
+                    <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../../../images/minimize.png" />
+                            </image>
+                            <effect>
+                                <ColorAdjust brightness="0.75" contrast="-1.0" />
+                            </effect>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </items>
+        </ToolBar>
+    </children>
+</StackPane>
