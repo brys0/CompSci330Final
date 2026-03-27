@@ -1,7 +1,11 @@
 package org.uwgb.compsci330.common.exception;
 
 public class MessageNotOwnedException extends RuntimeException {
-    public MessageNotOwnedException(String messageId) {
-        super(String.format("You must own %s to delete it", messageId));
+    public MessageNotOwnedException(String message) {
+        super(message);
+    }
+
+    public static MessageNotOwnedException create(String messageId) {
+        return new MessageNotOwnedException(String.format("You must own %s to delete it", messageId));
     }
 }

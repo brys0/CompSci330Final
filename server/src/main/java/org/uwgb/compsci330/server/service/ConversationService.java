@@ -63,14 +63,14 @@ public class ConversationService {
 
         final Conversation conversation = conversationRepository
                 .findDirectConversation(userId, friendId)
-                .orElseThrow(() -> new InvalidConversationException(friendId));
+                .orElseThrow(() -> InvalidConversationException.create(friendId));
 
         if (afterId != null && !messageRepository.existsById(afterId)) {
-            throw new InvalidMessageReferenceId(afterId);
+            throw InvalidMessageReferenceId.create(afterId);
         }
 
         if (beforeId != null && !messageRepository.existsById(beforeId)) {
-            throw new InvalidMessageReferenceId(beforeId);
+            throw InvalidMessageReferenceId.create(beforeId);
         }
 
         final PageRequest page = PageRequest.of(0, limit);
@@ -105,7 +105,7 @@ public class ConversationService {
     ) {
         final Conversation conversation = conversationRepository
                 .findDirectConversation(userId, friendId)
-                .orElseThrow(() -> new InvalidConversationException(friendId));
+                .orElseThrow(() -> InvalidConversationException.create(friendId));
 
         final User sender = userRepository
                 .findUserById(userId)
@@ -132,18 +132,18 @@ public class ConversationService {
     ) {
         final Conversation conversation = conversationRepository
                 .findDirectConversation(userId, friendId)
-                .orElseThrow(() -> new InvalidConversationException(friendId));
+                .orElseThrow(() -> InvalidConversationException.create(friendId));
 
         final SafeMessage message = messageRepository
                 .findMessageById(messageId)
                 .map(MessageMapper::toSafe)
-                .orElseThrow(() -> new InvalidMessageReferenceId(messageId));
+                .orElseThrow(() -> InvalidMessageReferenceId.create(messageId));
 
         if (message.getSender() != null) {
             if (!Objects.equals(message.getSender().getId(), userId))
-                throw new MessageNotOwnedException(messageId);
+                throw MessageNotOwnedException.create(messageId);
         } else { // System user, deleted user?
-            throw new MessageNotOwnedException(messageId);
+            throw MessageNotOwnedException.create(messageId);
         }
 
 

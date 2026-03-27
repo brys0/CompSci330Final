@@ -120,7 +120,7 @@ public class RelationshipRestControllerIntegrationTest {
 
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(new InvalidFriendRequestException(requesteeUsername+"bleh").getMessage()))
+                .andExpect(jsonPath("$.message").value(InvalidFriendRequestException.create(requesteeUsername+"bleh").getMessage()))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
@@ -172,7 +172,7 @@ public class RelationshipRestControllerIntegrationTest {
 
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(new ExistingRelationshipException(requesterUsername).getMessage()))
+                .andExpect(jsonPath("$.message").value(ExistingRelationshipException.create(requesterUsername).getMessage()))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
@@ -207,7 +207,7 @@ public class RelationshipRestControllerIntegrationTest {
 
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(new OutgoingRequestAlreadyExistsException(requesteeUsername).getMessage()))
+                .andExpect(jsonPath("$.message").value(OutgoingRequestAlreadyExistsException.create(requesteeUsername).getMessage()))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 

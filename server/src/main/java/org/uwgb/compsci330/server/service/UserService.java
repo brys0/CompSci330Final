@@ -35,16 +35,16 @@ public class UserService {
 
         // Username is too short.
         if (usernameLen < ServerConfiguration.MIN_USERNAME_LENGTH) {
-            throw new UsernameTooShortException(username);
+            throw UsernameTooShortException.create(username);
         } else if (usernameLen > ServerConfiguration.MAX_USERNAME_LENGTH) {  // Username is too long.
-            throw new UsernameTooLongException(username);
+            throw UsernameTooLongException.create(username);
         } else if (Objects.equals(username, ServerConfiguration.SYSTEM_USER)) {
             throw new ReservedUsernameException();
         }
 
         // Check if user with that username already exists, if it does escape early.
         if (userRepository.existsByUsername(userRequest.getUsername())) {
-            throw new UserAlreadyExistsException(userRequest.getUsername());
+            throw UserAlreadyExistsException.create(userRequest.getUsername());
         }
         // Next check password len
         if (userRequest.getPassword().length() < ServerConfiguration.MIN_PASSWORD_LENGTH) throw new PasswordTooShortException();

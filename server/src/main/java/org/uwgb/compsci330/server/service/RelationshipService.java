@@ -46,7 +46,7 @@ public class RelationshipService {
                 .findByUsername(otherUsername)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new InvalidFriendRequestException(otherUsername)); // User with that username must not exist.
+                .orElseThrow(() -> InvalidFriendRequestException.create(otherUsername)); // User with that username must not exist.
 
         // A user is trying to friend the "System" user, bad!
         if (otherUser.isSystemUser()) throw new ReservedUsernameException();
@@ -63,20 +63,20 @@ public class RelationshipService {
                 .findUserById(userId)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new InvalidFriendRequestException(userId));
+                .orElseThrow(() -> InvalidFriendRequestException.create(userId));
 
         if (existingRelationship != null) {
             // If a relationship already exists.
             if (existingRelationship.getStatus() == RelationshipStatus.ACCEPTED) {
                 // If the user accepted the request, the friend is the original requester
-                if (Objects.equals(existingRelationship.getRequestee().getId(), userId)) throw new ExistingRelationshipException(existingRelationship.getRequester().getUsername());
+                if (Objects.equals(existingRelationship.getRequestee().getId(), userId)) throw ExistingRelationshipException.create(existingRelationship.getRequester().getUsername());
 
                 // Otherwise the user is the original requester.
-                throw new ExistingRelationshipException(existingRelationship.getRequestee().getUsername());
+                throw ExistingRelationshipException.create(existingRelationship.getRequestee().getUsername());
             }
 
             boolean outgoingRequest = existingRelationship.isOutgoingRequest(userId);
-            if (outgoingRequest) throw new OutgoingRequestAlreadyExistsException(existingRelationship.getRequestee().getUsername());
+            if (outgoingRequest) throw OutgoingRequestAlreadyExistsException.create(existingRelationship.getRequestee().getUsername());
 
             // Friendship should be accepted.
             existingRelationship.setStatus(RelationshipStatus.ACCEPTED);
@@ -135,7 +135,7 @@ public class RelationshipService {
             }
         }
 
-        throw new RelationshipDoesNotExistException(otherUsername);
+        throw RelationshipDoesNotExistException.create(otherUsername);
     }
 
     @Transactional
