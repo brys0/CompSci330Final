@@ -24,6 +24,8 @@ public class SafeMessage {
     @Getter
     private MessageType type;
 
+    public SafeMessage() {}
+
     public SafeMessage(
             String id,
             SafeUser sender,

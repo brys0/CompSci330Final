@@ -28,22 +28,34 @@ public class Client {
         this.config = config;
         this.httpRelationshipClient = new HttpRelationshipClient(this);
         this.httpUserClient = new HttpUserClient(this);
+
+        if (config.getToken() != null) {
+            try {
+                this.fetchAndSetSelf();
+            } catch (IOException e) {
+                System.out.printf("There was an issue when trying to fetch user on client initialization: %s\n", e);
+            }
+        }
     }
 
-    public void register(String username, String password) throws IOException {
+    public SelfUser register(String username, String password) throws IOException {
         final String token = this.httpUserClient.registerWithUsernameAndPassword(new RegisterUserRequest(username, password));
         System.out.printf("Successfully registered: %s\n", username);
 
         this.config.setToken(token);
         this.fetchAndSetSelf();
+
+        return this.self;
     }
 
-    public void login(String username, String password) throws IOException {
+    public SelfUser login(String username, String password) throws IOException {
         final String token = this.httpUserClient.loginWithUsernameAndPassword(new LoginUserRequest(username, password));
         System.out.printf("Successfully logged in: %s\n", username);
 
         this.config.setToken(token);
         this.fetchAndSetSelf();
+
+        return this.self;
     }
 
     private void fetchAndSetSelf() throws IOException {

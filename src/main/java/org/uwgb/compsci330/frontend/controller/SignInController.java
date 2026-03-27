@@ -1,5 +1,6 @@
-package org.uwgb.compsci330.frontend;
+package org.uwgb.compsci330.frontend.controller;
 
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,16 +11,17 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.uwgb.compsci330.client_sdk.Client;
+import org.uwgb.compsci330.client_sdk.entity.SelfUser;
 import org.uwgb.compsci330.frontend.client.ClientSingleton;
+import org.uwgb.compsci330.frontend.controller.base.CommonController;
 
 import java.io.IOException;
 
-public class SignInController {
+public class SignInController extends CommonController {
 
-    private Stage stage;
-    public void setStage(Stage stage) { this.stage = stage; }
-
-    private final Client client = ClientSingleton.getInstance().getClient();
+    public SignInController(Parent parent, Stage stage, Client client) {
+        super(parent, stage, client);
+    }
 
     @FXML
     private PasswordField password;
@@ -48,52 +50,38 @@ public class SignInController {
         final String username = this.username.getText();
         final String password = this.password.getText();
 
-        try {
-            signInButton.setDisable(true);
-            client.login(username, password);
 
-            FXMLLoader chatLoader = new FXMLLoader(
-                    getClass().getResource(
-                            "/xml/pages/chat/chat.fxml"
-                    )
-            );
+        Task<SelfUser> loginTask = new Task<>() {
+            @Override
+            protected SelfUser call() throws IOException {
+                return client.login(username, password);
+            }
+        };
 
-            Parent chatFXML = chatLoader.load();
-
-            ChatController chatController = chatLoader.getController();
-            chatController.setStage(stage);
-
-            stage.getScene().setRoot(chatFXML);
-
-            stage.setResizable(true);
-            stage.setFullScreen(true);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-
-        } finally {
+        loginTask.setOnSucceeded(e -> {
             signInButton.setDisable(false);
 
-        }
+            try {
+                this.navigateToFullscreen("/xml/pages/chat/chat.fxml", new ChatController(this.parent, this.stage, this.client));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
+        loginTask.setOnFailed(e -> {
+            Throwable ex = loginTask.getException();
+            ex.printStackTrace(); // temporary, replace with proper error display
+
+            signInButton.setDisable(false);
+        });
+
+        signInButton.setDisable(true);
+        new Thread(loginTask).start();
     }
 
     @FXML
     void signUp(ActionEvent event) throws IOException {
-
-        FXMLLoader signUpLoader = new FXMLLoader(
-                getClass().getResource(
-                        "/xml/pages/signUp/signUp.fxml"
-                )
-        );
-
-        Parent signUpFXML = signUpLoader.load();
-
-        SignUpController signUpController = signUpLoader.getController();
-        signUpController.setStage(stage);
-
-        stage.getScene().setRoot(signUpFXML);
-
+        this.navigateTo("/xml/pages/signUp/signIn.fxml", new SignUpController(this.parent, this.stage, this.client));
     }
 
     private double xOffset = 0;

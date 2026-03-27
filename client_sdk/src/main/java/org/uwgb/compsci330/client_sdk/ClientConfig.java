@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +19,8 @@ public class ClientConfig {
 
     @Getter
     private final ObjectMapper objectMapper;
+
+    @Nullable
     @Getter
     @Setter
     private String token;

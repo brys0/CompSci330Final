@@ -14,6 +14,8 @@ public class SafeRelationship {
     @Getter
     private RelationshipStatus status;
 
+    public SafeRelationship() {}
+
     public SafeRelationship(
             SafeUser requester,
             SafeUser requestee,

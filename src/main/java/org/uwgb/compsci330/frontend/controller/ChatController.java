@@ -1,4 +1,4 @@
-package org.uwgb.compsci330.frontend;
+package org.uwgb.compsci330.frontend.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,16 +10,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.uwgb.compsci330.client_sdk.Client;
+import org.uwgb.compsci330.frontend.controller.base.CommonController;
 
 import java.io.IOException;
 
-public class ChatController {
-
-    private Stage stage;
-    public void setStage(Stage stage) { this.stage = stage; }
-
+public class ChatController extends CommonController {
     @FXML
     private ImageView restoreButtonImage;
+
+    protected ChatController(Parent parent, Stage stage, Client client) {
+        super(parent, stage, client);
+    }
 
     @FXML
     void chatFoldButtonPress(ActionEvent event) {
@@ -28,36 +30,7 @@ public class ChatController {
 
     @FXML
     void settingsButtonPress(ActionEvent event) throws IOException {
-
-        Stage settingsStage = new Stage();
-        settingsStage.setTitle("Settings");
-
-        settingsStage.initStyle(StageStyle.UNDECORATED);
-        settingsStage.initOwner(stage);
-
-        FXMLLoader settingsLoader = new FXMLLoader(
-                getClass().getResource(
-                        "/xml/pages/settings/settings.fxml"
-                )
-        );
-
-        Parent settingsFXML = settingsLoader.load();
-
-        SettingsController settingsController = settingsLoader.getController();
-        settingsController.setStage(settingsStage);
-        settingsController.setRootStage(stage);
-
-        Scene settings = new Scene(settingsFXML);
-
-        settings.getStylesheets().add(
-                getClass().getResource(
-                        "/css/style.css"
-                ).toExternalForm()
-        );
-
-        settingsStage.setScene(settings);
-
-        settingsStage.show();
+        SettingsController.open(stage, client);
     }
 
 

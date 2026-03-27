@@ -5,13 +5,15 @@ import lombok.Getter;
 // Classes annotated as safe hide information that should not be avaliable to the client.
 public class SafeUser {
     @Getter
-    private final String id;
+    private String id;
 
     @Getter
-    private final String username;
+    private String username;
 
     @Getter
-    private final UserStatus status;
+    private UserStatus status;
+
+    public SafeUser() {}
 
     public SafeUser(
             String id,

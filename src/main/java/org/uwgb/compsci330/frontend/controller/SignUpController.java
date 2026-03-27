@@ -1,5 +1,6 @@
-package org.uwgb.compsci330.frontend;
+package org.uwgb.compsci330.frontend.controller;
 
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,16 +11,16 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.uwgb.compsci330.client_sdk.Client;
+import org.uwgb.compsci330.client_sdk.entity.SelfUser;
 import org.uwgb.compsci330.frontend.client.ClientSingleton;
+import org.uwgb.compsci330.frontend.controller.base.CommonController;
 
 import java.io.IOException;
 
-public class SignUpController {
-
-    private Stage stage;
-    public void setStage(Stage stage) { this.stage = stage; }
-
-    private final Client client = ClientSingleton.getInstance().getClient();
+public class SignUpController extends CommonController {
+    public SignUpController(Parent parent, Stage stage, Client client) {
+        super(parent, stage, client);
+    }
 
     @FXML
     private PasswordField password;
@@ -49,31 +50,33 @@ public class SignUpController {
         final String password = this.password.getText();
         final String password1 = this.password1.getText();
 
-        if(password.equals(password1)) {
-            try {
-                signUpButton.setDisable(true);
-                client.register(username, password);
-
-                FXMLLoader loginLoader = new FXMLLoader(
-                        getClass().getResource(
-                                "/xml/pages/signIn/signIn.fxml"
-                        )
-                );
-
-                Parent loginFXML = loginLoader.load();
-
-                SignInController signInController = loginLoader.getController();
-                signInController.setStage(stage);
-
-                stage.getScene().setRoot(loginFXML);
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-
-            } finally {
-                signUpButton.setDisable(false);
-
+        Task<SelfUser> signUpTask = new Task<>() {
+            @Override
+            protected SelfUser call() throws IOException {
+                return client.register(username, password);
             }
+        };
+
+        signUpTask.setOnSucceeded(e -> {
+            signUpButton.setDisable(false);
+
+            try {
+                this.navigateToFullscreen("/xml/pages/chat/chat.fxml", new ChatController(this.parent, this.stage, this.client));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        signUpTask.setOnFailed(e -> {
+            Throwable ex = signUpTask.getException();
+            ex.printStackTrace(); // temporary, replace with proper error display
+
+            signUpButton.setDisable(false);
+        });
+
+        if(password.equals(password1)) {
+            signUpButton.setDisable(true);
+            new Thread(signUpTask).start();
         }
     }
 
