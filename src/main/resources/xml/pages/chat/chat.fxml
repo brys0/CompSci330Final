@@ -1,39 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.effect.ColorAdjust?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<HBox prefHeight="544.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <VBox prefHeight="544.0" prefWidth="200.0">
-         <children>
-            <HBox prefHeight="30.0">
-               <children>
-                  <Pane HBox.hgrow="ALWAYS" />
-                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.uwgb.compsci330.frontend.ChatController">
+   <top>
+      <ToolBar fx:id="windowBar" maxHeight="32.0" minHeight="32.0" nodeOrientation="RIGHT_TO_LEFT" onMouseDragged="#windowBarMouseDragged" onMousePressed="#windowBarMousePressed" styleClass="primary" BorderPane.alignment="TOP_CENTER">
+         <items>
+            <Button fx:id="closeButton" maxHeight="32.0" maxWidth="30.0" minHeight="32.0" minWidth="30.0" mnemonicParsing="false" onAction="#closeButtonPress">
+               <font>
+                  <Font name="SansSerif Bold" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="/xml/pages/chat/sidebar-collapse.png" />
+                        <Image url="@../../../images/close.png" />
                      </image>
-                     <cursor>
-                        <Cursor fx:constant="DEFAULT" />
-                     </cursor>
+                     <effect>
+                        <ColorAdjust brightness="0.75" contrast="-1.0" />
+                     </effect>
                   </ImageView>
-               </children>
-            </HBox>
-            <ListView id="friendsList" prefHeight="514.0" VBox.vgrow="ALWAYS" />
-         </children>
-      </VBox>
-      <VBox maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+               </graphic>
+            </Button>
+            <Button fx:id="restoreButton" maxHeight="32.0" maxWidth="30.0" minHeight="32.0" minWidth="30.0" mnemonicParsing="false" onAction="#restoreButtonPress">
+               <font>
+                  <Font name="SansSerif Bold" />
+               </font>
+               <graphic>
+                  <ImageView fx:id="restoreButtonImage" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../images/restore.png" />
+                     </image>
+                     <effect>
+                        <ColorAdjust brightness="0.75" contrast="-1.0" />
+                     </effect>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="minimizeButton" maxHeight="32.0" maxWidth="30.0" minHeight="32.0" minWidth="30.0" mnemonicParsing="false" onAction="#minimizeButtonPress">
+               <font>
+                  <Font name="SansSerif Bold" size="12.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../images/minimize.png" />
+                     </image>
+                     <effect>
+                        <ColorAdjust brightness="0.75" contrast="-1.0" />
+                     </effect>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </items>
+      </ToolBar>
+   </top>
+   <left>
+      <ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="200.0" prefWidth="200.0" styleClass="secondary" BorderPane.alignment="CENTER">
+         <content>
+            <VBox fx:id="chatMenu" alignment="TOP_CENTER" styleClass="secondary">
+               <children>
+                  <HBox alignment="CENTER" maxHeight="32.0" minHeight="32.0" nodeOrientation="RIGHT_TO_LEFT">
+                     <children>
+                        <Button fx:id="chatFoldButton" alignment="CENTER" maxHeight="32.0" maxWidth="30.0" minHeight="32.0" minWidth="30.0" mnemonicParsing="false" onAction="#chatFoldButtonPress">
+                           <font>
+                              <Font name="SansSerif Bold" size="12.0" />
+                           </font>
+                           <graphic>
+                              <ImageView fitHeight="28.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/sidebar-fold.png" />
+                                 </image>
+                                 <effect>
+                                    <ColorAdjust brightness="0.4" contrast="-1.0" />
+                                 </effect>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Pane disable="true" prefHeight="200.0" prefWidth="200.0" visible="false" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="settingsButton" alignment="CENTER" contentDisplay="CENTER" maxHeight="32.0" maxWidth="30.0" minHeight="32.0" minWidth="30.0" mnemonicParsing="false" onAction="#settingsButtonPress">
+                           <font>
+                              <Font name="SansSerif Bold" size="12.0" />
+                           </font>
+                           <graphic>
+                              <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/settings.png" />
+                                 </image>
+                                 <effect>
+                                    <ColorAdjust brightness="0.4" contrast="-1.0" />
+                                 </effect>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children></VBox>
+         </content>
+      </ScrollPane>
+   </left>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <TextArea id="recipientDisplay" editable="false" prefHeight="50.0" prefWidth="297.0" VBox.vgrow="NEVER" />
-            <ListView maxHeight="1.7976931348623157E308" prefWidth="400.0" VBox.vgrow="ALWAYS" />
+            <ListView styleClass="chat" VBox.vgrow="ALWAYS" />
          </children>
       </VBox>
-   </children>
-</HBox>
+   </center>
+</BorderPane>

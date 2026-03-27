@@ -5,6 +5,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
@@ -12,17 +13,32 @@ public class FXApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+
         stage.setTitle("NAME HERE");
 
-        Parent loginFXML = new FXMLLoader(
+        stage.setResizable(false);
+        stage.initStyle(StageStyle.UNDECORATED);
+
+        FXMLLoader signInLoader  = new FXMLLoader(
                 getClass().getResource(
-                        "/xml/pages/login/login.fxml"
+                        "/xml/pages/signIn/signIn.fxml"
                 )
-        ).load();
-        Scene login = new Scene(loginFXML);
+        );
 
+        Parent signInFXML = signInLoader.load();
 
-        stage.setScene(login);
+        SignInController signInController = signInLoader.getController();
+        signInController.setStage(stage);
+
+        Scene root = new Scene(signInFXML);
+
+        root.getStylesheets().add(
+                getClass().getResource(
+                        "/css/style.css"
+                ).toExternalForm()
+        );
+
+        stage.setScene(root);
 
         stage.show();
     }
