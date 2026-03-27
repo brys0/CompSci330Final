@@ -4,7 +4,7 @@ package org.uwgb.compsci330.frontend;
 // That just calls our JavaFX class
 // due to runtime dependency issues.
 public class Main {
-    public static void main(String[] args) {
-        FXApplication.main(args);
+    public static void main() {
+        FXApplication.main();
     }
 }

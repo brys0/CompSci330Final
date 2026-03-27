@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class FXMLUtils {
     public static <T> LoadedView<T> load(String path, T controller) throws IOException {
@@ -11,7 +12,7 @@ public class FXMLUtils {
         loader.setControllerFactory(c -> controller);
         Parent root = loader.load();
         root.getStylesheets().add(
-                FXMLUtils.class.getResource("/css/style.css").toExternalForm()
+                Objects.requireNonNull(FXMLUtils.class.getResource("/css/style.css")).toExternalForm()
         );
         return new LoadedView<>(root, loader.getController());
     }

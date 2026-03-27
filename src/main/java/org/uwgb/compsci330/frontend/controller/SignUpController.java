@@ -3,7 +3,6 @@ package org.uwgb.compsci330.frontend.controller;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
@@ -12,7 +11,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.uwgb.compsci330.client_sdk.Client;
 import org.uwgb.compsci330.client_sdk.entity.SelfUser;
-import org.uwgb.compsci330.frontend.client.ClientSingleton;
 import org.uwgb.compsci330.frontend.controller.base.CommonController;
 
 import java.io.IOException;
