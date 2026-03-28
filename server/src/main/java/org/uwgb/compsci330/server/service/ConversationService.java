@@ -21,6 +21,7 @@ import org.uwgb.compsci330.server.repository.UserRepository;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -42,10 +43,20 @@ public class ConversationService {
     @SensitiveApi
     @FragileSensitiveApi
     public Conversation createConversation(Set<User> users) {
-        Conversation conversation = new Conversation(users);
-        conversation = conversationRepository.save(conversation);
+        final User[] usersArray = users.toArray(new User[0]);
+        Conversation conversation = conversationRepository
+                .findDirectConversation(
+                        usersArray[0].getId(),
+                        usersArray[1].getId()
+                )
+                .orElse(conversationRepository.save(new Conversation(users)));
 
-        messageService.createMessage(null, conversation, "Say hi! You're now friends :)", MessageType.SYSTEM);
+        messageService.createMessage(
+                null,
+                conversation,
+                "Say hi! You're now friends :)",
+                MessageType.SYSTEM
+        );
 
         return conversation;
     }

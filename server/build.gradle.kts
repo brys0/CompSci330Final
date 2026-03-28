@@ -72,6 +72,9 @@ dependencies {
 	// Custom annotation processor (to warn against using internal api methods)
 	annotationProcessor(project(":server:processor"))
 	compileOnly(project(":server:annotation"))
+
+	// guava
+	implementation("com.google.guava:guava:33.2.0-jre")
 }
 
 tasks.withType<Test> {

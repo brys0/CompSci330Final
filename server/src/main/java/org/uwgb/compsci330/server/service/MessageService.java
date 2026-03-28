@@ -7,14 +7,15 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.uwgb.compsci330.common.model.response.message.MessageType;
 import org.uwgb.compsci330.common.model.response.message.SafeMessage;
-import org.uwgb.compsci330.common.websocket.model.out.message.CreateMessageEvent;
-import org.uwgb.compsci330.common.websocket.model.out.message.DeleteMessageEvent;
+import org.uwgb.compsci330.common.websocket.model.out.message.MessageCreatedEvent;
+import org.uwgb.compsci330.common.websocket.model.out.message.MessageDeletedEvent;
 import org.uwgb.compsci330.server.annotation.SensitiveApi;
 import org.uwgb.compsci330.server.entity.conversation.Conversation;
 import org.uwgb.compsci330.server.entity.message.Message;
 import org.uwgb.compsci330.server.entity.user.User;
 import org.uwgb.compsci330.server.mapper.MessageMapper;
 import org.uwgb.compsci330.server.repository.MessageRepository;
+import org.uwgb.compsci330.server.websocket.event.EventEnvelope;
 
 @Service
 public class MessageService {
@@ -31,8 +32,8 @@ public class MessageService {
         final SafeMessage safeMessage = MessageMapper.toSafe(message);
 
         publisher.publishEvent(
-                new CreateMessageEvent(
-                        safeMessage,
+                new EventEnvelope<>(
+                        new MessageCreatedEvent(safeMessage),
                         conversation.getParticipants().stream()
                                 .map(User::getId)
                                 .toList()
@@ -48,10 +49,9 @@ public class MessageService {
         messageRepository.deleteById(messageId);
 
         publisher.publishEvent(
-                new DeleteMessageEvent(
-                        messageId,
-                        conversation.getParticipants()
-                                .stream()
+                new EventEnvelope<>(
+                        new MessageDeletedEvent(messageId),
+                        conversation.getParticipants().stream()
                                 .map(User::getId)
                                 .toList()
                 )

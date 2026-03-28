@@ -8,6 +8,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.uwgb.compsci330.client_sdk.Client;
+import org.uwgb.compsci330.common.model.response.message.SafeMessage;
+import org.uwgb.compsci330.common.websocket.model.out.OutboundEventType;
+import org.uwgb.compsci330.common.websocket.model.out.message.MessageCreatedEvent;
 import org.uwgb.compsci330.frontend.controller.base.CommonController;
 
 import java.io.IOException;
@@ -18,6 +21,18 @@ public class ChatController extends CommonController {
 
     protected ChatController(Parent parent, Stage stage, Client client) {
         super(parent, stage, client);
+
+        client.getWs().bus.on(OutboundEventType.HELLO, e -> {
+            System.out.println("Got hello event from server.");
+        });
+
+        client.getWs().bus.on(OutboundEventType.MESSAGE_CREATED, e -> {
+            final MessageCreatedEvent event = (MessageCreatedEvent) e;
+            final SafeMessage message = event.getPayload();
+
+            System.out.printf("Got message: %s\n", message);
+        });
+        client.getWs().connect();
     }
 
     @FXML

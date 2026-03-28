@@ -1,6 +1,5 @@
 package org.uwgb.compsci330.client_sdk.http;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -28,7 +27,7 @@ public class HttpClient extends Entity {
         return new Request.Builder().url(config.getBaseUrl() + path);
     }
 
-    protected <T> RequestBody createBody(T type) throws JsonProcessingException {
+    protected <T> RequestBody createBody(T type) {
         return RequestBody.create(this.config.getObjectMapper().writeValueAsBytes(type));
     }
 
@@ -54,7 +53,7 @@ public class HttpClient extends Entity {
         );
     }
 
-    protected void handleResponseError(String body) throws JsonProcessingException {
+    protected void handleResponseError(String body) {
         final ErrorResponse errorResponse = config.getObjectMapper().readValue(body, ErrorResponse.class);
         final String errorType = errorResponse.getType();
         final String message = errorResponse.getMessage();

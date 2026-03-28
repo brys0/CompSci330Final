@@ -1,7 +1,7 @@
 package org.uwgb.compsci330.server.websocket.raw;
 
 import org.springframework.web.socket.TextMessage;
-import org.uwgb.compsci330.common.websocket.model.OutboundEvent;
+import org.uwgb.compsci330.common.websocket.model.out.OutboundEvent;
 import tools.jackson.databind.ObjectMapper;
 
 public class RawServerMessage {

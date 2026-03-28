@@ -11,6 +11,7 @@ import org.uwgb.compsci330.common.websocket.model.out.status.StatusEvent;
 import org.uwgb.compsci330.server.annotation.FragileSensitiveApi;
 import org.uwgb.compsci330.server.service.RelationshipService;
 import org.uwgb.compsci330.server.service.UserService;
+import org.uwgb.compsci330.server.websocket.event.EventEnvelope;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Component
-public abstract class StatusWebsocket extends AuthenticatedWebsocket {
+public abstract class StatusWebsocket extends HeartbeatWebsocket {
     private static final Logger log = LoggerFactory.getLogger(StatusWebsocket.class);
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -28,7 +29,6 @@ public abstract class StatusWebsocket extends AuthenticatedWebsocket {
 
     @Autowired
     private UserService us;
-
 
     public StatusWebsocket(ObjectMapper objectMapper) {
         super(objectMapper);
@@ -41,6 +41,7 @@ public abstract class StatusWebsocket extends AuthenticatedWebsocket {
     @Override
     public void onClientAuthenticated(WebSocketSession session) {
         this.broadcastUserStatusEventToPeers(session, UserStatus.ONLINE);
+        super.startHeartbeat(session);
     }
 
     @FragileSensitiveApi
@@ -58,10 +59,13 @@ public abstract class StatusWebsocket extends AuthenticatedWebsocket {
 
                     final Set<String> peerIds = rs.getRelationshipPeers(userId);
                     super.sendEventToUser(
-                            new StatusEvent(
-                                    userId,
-                                    status,
-                                    peerIds)
+                            new EventEnvelope<>(
+                                    new StatusEvent(
+                                            userId,
+                                            status
+                                    ),
+                                    peerIds
+                            )
                     );
 
                     log.info("Broadcasted {} status ({}) for users {} (TTL: {}ms)", userId, status, peerIds, System.currentTimeMillis()-startInvoke);

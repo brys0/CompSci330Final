@@ -1,12 +1,11 @@
 package org.uwgb.compsci330.client_sdk;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import org.jetbrains.annotations.Nullable;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.concurrent.TimeUnit;
 
@@ -15,18 +14,22 @@ public class ClientConfig {
     private final String baseUrl;
 
     @Getter
+    private final String wsUrl;
+
+    @Getter
     private final OkHttpClient httpClient;
 
     @Getter
-    private final ObjectMapper objectMapper;
+    private final JsonMapper objectMapper;
 
     @Nullable
     @Getter
     @Setter
     private String token;
 
-    public ClientConfig(String baseUrl) {
+    public ClientConfig(String baseUrl, String wsUrl) {
         this.baseUrl = baseUrl;
+        this.wsUrl = wsUrl;
         this.httpClient = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
@@ -39,7 +42,7 @@ public class ClientConfig {
                     return chain.proceed(request);
                 })
                 .build();
-        this.objectMapper = new ObjectMapper();
+        this.objectMapper = new JsonMapper();
     }
 
 

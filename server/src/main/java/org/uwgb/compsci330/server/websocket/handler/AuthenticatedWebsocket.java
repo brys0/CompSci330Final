@@ -5,12 +5,15 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import org.uwgb.compsci330.common.websocket.model.InboundEvent;
-import org.uwgb.compsci330.common.websocket.model.event.OutboundEventWithIdentity;
-import org.uwgb.compsci330.common.websocket.model.in.AuthenticationRequiredEvent;
+import org.uwgb.compsci330.common.websocket.model.in.InboundEvent;
+import org.uwgb.compsci330.common.websocket.model.out.OutboundEvent;
+import org.uwgb.compsci330.common.websocket.model.out.authentication.AuthenticationRequiredEvent;
+import org.uwgb.compsci330.common.websocket.model.in.authenticate.AuthenticateEvent;
 import org.uwgb.compsci330.common.websocket.model.in.authenticate.AuthenticateEventPayload;
-import org.uwgb.compsci330.common.websocket.model.out.HelloEvent;
+import org.uwgb.compsci330.common.websocket.model.out.hello.HelloEvent;
+import org.uwgb.compsci330.server.ServerConfiguration;
 import org.uwgb.compsci330.server.security.JwtUtil;
+import org.uwgb.compsci330.server.websocket.event.EventEnvelope;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -32,7 +35,7 @@ public abstract class AuthenticatedWebsocket extends SequencedWebsocket {
     }
 
     abstract void onClientAuthenticated(WebSocketSession session);
-    abstract void onClientMessage(WebSocketSession session, InboundEvent event);
+    abstract void onClientMessage(WebSocketSession session, InboundEvent<?> event);
 
     @Override
     public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) {
@@ -41,9 +44,9 @@ public abstract class AuthenticatedWebsocket extends SequencedWebsocket {
     }
 
     @Override
-    public final void handleTextMessage(WebSocketSession session, TextMessage message) {
+    public final void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) {
         try {
-            InboundEvent genericEvent = super.messageToInboundEvent(session, message, InboundEvent.class);
+            InboundEvent<?> genericEvent = super.messageToInboundEvent(session, message, InboundEvent.class);
 
             if (genericEvent == null) {
                 return;
@@ -57,7 +60,7 @@ public abstract class AuthenticatedWebsocket extends SequencedWebsocket {
                         return;
                     }
 
-                    final AuthenticateEventPayload auth = mapper.convertValue(genericEvent.payload, AuthenticateEventPayload.class);
+                    final AuthenticateEventPayload auth = ((AuthenticateEvent) genericEvent).payload;
 
                     try {
                         final Claims claims = JwtUtil.validateToken(auth.token());
@@ -67,7 +70,7 @@ public abstract class AuthenticatedWebsocket extends SequencedWebsocket {
                         session.getAttributes().put("userId", userId);
                         this.addUserSession(userId, session);
 
-                        super.sendEventWithoutSequence(session, new HelloEvent());
+                        super.sendEventWithoutSequence(session, new HelloEvent(ServerConfiguration.WEBSOCKET_HEARTBEAT_INTERVAL));
                         this.onClientAuthenticated(session);
                     } catch (Exception e) {
                         // Authentication probably failed.
@@ -96,15 +99,15 @@ public abstract class AuthenticatedWebsocket extends SequencedWebsocket {
     }
 
     @Override
-    public void sendEventToUser(OutboundEventWithIdentity event) throws IOException {
-        for (String userId : event.getUsers()) {
+    public void sendEventToUser(EventEnvelope<OutboundEvent<?>> envelope) throws IOException {
+        for (String userId : envelope.getUsers()) {
             Set<WebSocketSession> sessions = this.authenticatedUsers.get(userId);
             if (sessions != null) {
                 for (WebSocketSession s : sessions) {
                     if (s.isOpen()) {
                         // Use the super method so we don't accidentally
                         // increment the sequence or re-buffer it.
-                        super.sendEventWithoutSequence(s, event);
+                        super.sendEventWithoutSequence(s, envelope.getEvent());
                     }
                 }
             }

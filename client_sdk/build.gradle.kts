@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("java-library")
 }
 
 group = "org.uwgb.compsci330.client_sdk"
@@ -21,7 +22,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    implementation(project(":common"))
+    api(project(":common"))
 
     // Getter & setter generation
     compileOnly("org.projectlombok:lombok:1.18.44")
@@ -29,12 +30,11 @@ dependencies {
 
     // HTTP Client
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
+    implementation("com.neovisionaries:nv-websocket-client:2.14")
 
-    implementation("com.fasterxml.jackson.core:jackson-core:2.18.0")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.18.0")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.0")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.0")
-
+    // Logger
+    implementation("ch.qos.logback:logback-classic:1.5.32")
+    implementation("org.slf4j:slf4j-api:2.0.17")
 }
 
 tasks.test {

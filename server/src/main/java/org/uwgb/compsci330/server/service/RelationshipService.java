@@ -7,8 +7,9 @@ import org.springframework.stereotype.Service;
 import org.uwgb.compsci330.common.exception.*;
 import org.uwgb.compsci330.common.model.response.relationship.RelationshipStatus;
 import org.uwgb.compsci330.common.model.response.relationship.SafeRelationship;
-import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipEvent;
-import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipEventType;
+import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipCreatedEvent;
+import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipDeletedEvent;
+import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipPendingEvent;
 import org.uwgb.compsci330.server.annotation.FragileSensitiveApi;
 import org.uwgb.compsci330.server.annotation.SensitiveApi;
 import org.uwgb.compsci330.server.entity.relationship.Relationship;
@@ -16,6 +17,7 @@ import org.uwgb.compsci330.server.entity.user.User;
 import org.uwgb.compsci330.server.mapper.RelationshipMapper;
 import org.uwgb.compsci330.server.repository.RelationshipRepository;
 import org.uwgb.compsci330.server.repository.UserRepository;
+import org.uwgb.compsci330.server.websocket.event.EventEnvelope;
 
 import java.util.List;
 import java.util.Objects;
@@ -86,9 +88,8 @@ public class RelationshipService {
             conversationService.createConversation(Set.of(requester, otherUser));
 
             publisher.publishEvent(
-                    new RelationshipEvent(
-                            RelationshipEventType.RELATIONSHIP_ACCEPTED,
-                            relationship,
+                    new EventEnvelope<>(
+                            new RelationshipCreatedEvent(relationship),
                             userId,
                             otherUser.getId()
                     )
@@ -102,10 +103,10 @@ public class RelationshipService {
         relationshipRepository.save(newReq);
 
         final SafeRelationship relationship = RelationshipMapper.toSafe(newReq);
+
         publisher.publishEvent(
-                new RelationshipEvent(
-                        RelationshipEventType.RELATIONSHIP_PENDING,
-                        relationship,
+                new EventEnvelope<>(
+                        new RelationshipPendingEvent(relationship),
                         userId,
                         otherUser.getId()
                 )
@@ -124,13 +125,13 @@ public class RelationshipService {
             if (relationship.getRequestee().getUsername().equals(otherUsername) || relationship.getRequester().getUsername().equals(otherUsername)) {
                 relationshipRepository.deleteById(relationship.getId());
                 publisher.publishEvent(
-                        new RelationshipEvent(
-                                RelationshipEventType.RELATIONSHIP_DELETED,
-                                RelationshipMapper.toSafe(relationship),
+                        new EventEnvelope<>(
+                                new RelationshipDeletedEvent(RelationshipMapper.toSafe(relationship)),
                                 relationship.getRequester().getId(),
                                 relationship.getRequestee().getId()
                         )
                 );
+
                 return;
             }
         }

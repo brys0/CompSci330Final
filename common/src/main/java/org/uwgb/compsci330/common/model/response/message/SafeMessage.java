@@ -41,4 +41,9 @@ public class SafeMessage {
         this.updatedAt = updatedAt;
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return String.format("(%s) %s (Sent by: %s)", this.id, this.content, this.sender.getUsername());
+    }
 }

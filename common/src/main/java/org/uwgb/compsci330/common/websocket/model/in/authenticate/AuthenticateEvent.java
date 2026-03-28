@@ -1,11 +1,13 @@
 package org.uwgb.compsci330.common.websocket.model.in.authenticate;
 
-import org.uwgb.compsci330.common.websocket.model.InboundEvent;
+import lombok.NoArgsConstructor;
+import org.uwgb.compsci330.common.websocket.model.in.InboundEvent;
 import org.uwgb.compsci330.common.websocket.model.in.InboundEventType;
 
-public class AuthenticateEvent extends InboundEvent {
+@NoArgsConstructor
+public class AuthenticateEvent extends InboundEvent<AuthenticateEventPayload> {
     public AuthenticateEvent(String token) {
-        super(InboundEventType.AUTHENTICATE,  new AuthenticateEventPayload(token));
+        super(InboundEventType.AUTHENTICATE, new AuthenticateEventPayload(token));
     }
 }
 

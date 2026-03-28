@@ -1,6 +1,5 @@
 package org.uwgb.compsci330.client_sdk.http;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;

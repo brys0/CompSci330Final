@@ -5,8 +5,8 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import org.uwgb.compsci330.common.websocket.model.InboundEvent;
-import org.uwgb.compsci330.common.websocket.model.OutboundEvent;
+import org.uwgb.compsci330.common.websocket.model.in.InboundEvent;
+import org.uwgb.compsci330.common.websocket.model.out.OutboundEvent;
 import org.uwgb.compsci330.server.websocket.raw.RawServerMessage;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
@@ -16,7 +16,7 @@ public abstract class WebsocketHelper extends TextWebSocketHandler {
     public WebsocketHelper(ObjectMapper mapper) {
         this.mapper = mapper;
     }
-    public void sendEvent(WebSocketSession session, OutboundEvent event) throws java.io.IOException {
+    public void sendEvent(WebSocketSession session, OutboundEvent<?> event) throws java.io.IOException {
         session.sendMessage(new RawServerMessage(mapper, event).getTextMessage());
     }
 
@@ -35,7 +35,7 @@ public abstract class WebsocketHelper extends TextWebSocketHandler {
     }
 
     // Convert the message to an inbound event, if the client doesn't respect the rules, we simply force close the websocket.
-    public final <T extends InboundEvent> T messageToInboundEvent(WebSocketSession session, TextMessage message, Class<T> value) {
+    public final <T extends InboundEvent<?>> T messageToInboundEvent(WebSocketSession session, TextMessage message, Class<T> value) {
         try {
             return mapper.readValue(message.getPayload(), value);
         } catch (JacksonException e) {

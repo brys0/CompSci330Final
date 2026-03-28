@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import org.uwgb.compsci330.client_sdk.entity.SelfUser;
 import org.uwgb.compsci330.client_sdk.http.HttpRelationshipClient;
 import org.uwgb.compsci330.client_sdk.http.HttpUserClient;
+import org.uwgb.compsci330.client_sdk.websocket.WebSocketManager;
 import org.uwgb.compsci330.common.model.request.user.LoginUserRequest;
 import org.uwgb.compsci330.common.model.request.user.RegisterUserRequest;
 
@@ -24,10 +25,14 @@ public class Client {
     @Nullable
     private SelfUser self;
 
+    @Getter
+    private final WebSocketManager ws;
+
     public Client(ClientConfig config) {
         this.config = config;
         this.httpRelationshipClient = new HttpRelationshipClient(this);
         this.httpUserClient = new HttpUserClient(this);
+        this.ws = new WebSocketManager(this);
 
         if (config.getToken() != null) {
             try {
