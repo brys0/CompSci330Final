@@ -10,7 +10,7 @@ import org.uwgb.compsci330.common.websocket.model.out.authentication.Authenticat
 import org.uwgb.compsci330.common.websocket.model.out.heartbeat.HeartbeatAcknowledgeEvent;
 import org.uwgb.compsci330.common.websocket.model.out.hello.HelloEvent;
 import org.uwgb.compsci330.common.websocket.model.out.message.MessageCreatedEvent;
-import org.uwgb.compsci330.common.websocket.model.out.message.MessageDeletedEvent;
+import org.uwgb.compsci330.common.websocket.model.out.message.delete.MessageDeletedEvent;
 import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipCreatedEvent;
 import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipDeletedEvent;
 import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipPendingEvent;

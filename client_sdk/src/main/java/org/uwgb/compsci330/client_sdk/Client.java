@@ -2,9 +2,12 @@ package org.uwgb.compsci330.client_sdk;
 
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
-import org.uwgb.compsci330.client_sdk.entity.SelfUser;
+import org.uwgb.compsci330.client_sdk.cache.CacheManager;
+import org.uwgb.compsci330.client_sdk.entity.relationship.Relationship;
+import org.uwgb.compsci330.client_sdk.entity.user.SelfUser;
 import org.uwgb.compsci330.client_sdk.http.HttpRelationshipClient;
 import org.uwgb.compsci330.client_sdk.http.HttpUserClient;
+import org.uwgb.compsci330.client_sdk.manager.RelationshipManager;
 import org.uwgb.compsci330.client_sdk.websocket.WebSocketManager;
 import org.uwgb.compsci330.common.model.request.user.LoginUserRequest;
 import org.uwgb.compsci330.common.model.request.user.RegisterUserRequest;
@@ -16,10 +19,16 @@ public class Client {
     private final ClientConfig config;
 
     @Getter
+    private final RelationshipManager relationships;
+
+    @Getter
     private final HttpRelationshipClient httpRelationshipClient;
 
     @Getter
     private final HttpUserClient httpUserClient;
+
+    @Getter
+    private final CacheManager cache;
 
     @Getter
     @Nullable
@@ -33,10 +42,13 @@ public class Client {
         this.httpRelationshipClient = new HttpRelationshipClient(this);
         this.httpUserClient = new HttpUserClient(this);
         this.ws = new WebSocketManager(this);
+        this.cache = new CacheManager(this);
+        this.relationships = new RelationshipManager(this);
 
         if (config.getToken() != null) {
             try {
                 this.fetchAndSetSelf();
+                this.relationships.fetchRelationships();
             } catch (IOException e) {
                 System.out.printf("There was an issue when trying to fetch user on client initialization: %s\n", e);
             }

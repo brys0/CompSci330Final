@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.uwgb.compsci330.common.model.response.message.MessageType;
 import org.uwgb.compsci330.common.model.response.message.SafeMessage;
 import org.uwgb.compsci330.common.websocket.model.out.message.MessageCreatedEvent;
-import org.uwgb.compsci330.common.websocket.model.out.message.MessageDeletedEvent;
+import org.uwgb.compsci330.common.websocket.model.out.message.delete.MessageDeletedEvent;
 import org.uwgb.compsci330.server.annotation.SensitiveApi;
 import org.uwgb.compsci330.server.entity.conversation.Conversation;
 import org.uwgb.compsci330.server.entity.message.Message;

@@ -10,12 +10,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BusManager {
-    private final Map<OutboundEventType, List<EventListener<OutboundEvent<?>>>> listeners = new ConcurrentHashMap<>();
+    private final Map<OutboundEventType, List<EventListener<Object>>> listeners = new ConcurrentHashMap<>();
 
     @SuppressWarnings("unchecked")
-    public <T extends OutboundEvent<?>> void on(OutboundEventType type, EventListener<T> listener) {
+    public <T> void on(OutboundEventType type, EventListener<T> listener) {
         listeners.computeIfAbsent(type, k -> new CopyOnWriteArrayList<>())
-                .add((EventListener<OutboundEvent<?>>) listener);
+                .add((EventListener<Object>) listener);
     }
 
     public void off(OutboundEventType type, EventListener<?> listener) {
@@ -26,10 +26,10 @@ public class BusManager {
         listeners.clear();
     }
 
-    protected void dispatch(OutboundEvent<?> event) {
-        List<EventListener<OutboundEvent<?>>> handlers = listeners.get(event.getType());
+    public void dispatch(OutboundEventType type, Object entity) {
+        List<EventListener<Object>> handlers = listeners.get(type);
         if (handlers != null) {
-            handlers.forEach(h -> h.onEvent(event));
+            handlers.forEach(h -> h.onEvent(entity));
         }
     }
 }

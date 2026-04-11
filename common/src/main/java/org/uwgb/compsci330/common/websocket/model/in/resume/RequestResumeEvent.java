@@ -6,7 +6,7 @@ import org.uwgb.compsci330.common.websocket.model.in.InboundEventType;
 
 @NoArgsConstructor
 public class RequestResumeEvent extends InboundEvent<RequestResumePayload> {
-    public RequestResumeEvent(InboundEventType type, long sequence) {
+    public RequestResumeEvent(long sequence) {
         super(InboundEventType.REQUEST_RESUME, new RequestResumePayload(sequence));
     }
 }

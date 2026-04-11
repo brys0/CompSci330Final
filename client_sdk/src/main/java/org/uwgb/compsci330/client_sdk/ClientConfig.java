@@ -27,6 +27,8 @@ public class ClientConfig {
     @Setter
     private String token;
 
+    public static final int MAX_CACHE_SIZE = 1000;
+
     public ClientConfig(String baseUrl, String wsUrl) {
         this.baseUrl = baseUrl;
         this.wsUrl = wsUrl;

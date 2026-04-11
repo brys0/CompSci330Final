@@ -10,7 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.uwgb.compsci330.client_sdk.Client;
-import org.uwgb.compsci330.client_sdk.entity.SelfUser;
+import org.uwgb.compsci330.client_sdk.entity.user.SelfUser;
 import org.uwgb.compsci330.frontend.controller.base.CommonController;
 
 import java.io.IOException;

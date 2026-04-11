@@ -53,11 +53,7 @@ public abstract class SequencedWebsocket extends WebsocketHelper {
         String userId = (String) session.getAttributes().get("userId");
         Deque<OutboundEvent<?>> queue = events.get(userId);
 
-        if (queue == null || queue.isEmpty()) {
-            return;
-        }
-
-        if (queue.peekFirst().getSequence() > lastSequence + 1) {
+        if (queue == null || queue.isEmpty() || queue.peekFirst().getSequence() > lastSequence + 1) {
             this.sendEventWithoutSequence(session, new NoResumeEvent());
             return;
         }

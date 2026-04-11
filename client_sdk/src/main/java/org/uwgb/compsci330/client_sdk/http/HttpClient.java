@@ -1,5 +1,6 @@
 package org.uwgb.compsci330.client_sdk.http;
 
+import lombok.Getter;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -12,10 +13,12 @@ import org.uwgb.compsci330.common.model.response.ErrorResponse;
 import java.io.IOException;
 import java.util.List;
 
-public class HttpClient extends Entity {
+public class HttpClient implements Entity {
+    @Getter
+    private final Client client;
     protected final ClientConfig config;
     public HttpClient(Client client) {
-        super(client);
+        this.client = client;
         this.config = client.getConfig();
     }
 

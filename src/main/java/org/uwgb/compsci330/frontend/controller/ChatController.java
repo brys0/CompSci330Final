@@ -1,38 +1,146 @@
 package org.uwgb.compsci330.frontend.controller;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.uwgb.compsci330.client_sdk.Client;
-import org.uwgb.compsci330.common.model.response.message.SafeMessage;
+import org.uwgb.compsci330.client_sdk.entity.message.Message;
+import org.uwgb.compsci330.client_sdk.entity.relationship.Relationship;
 import org.uwgb.compsci330.common.websocket.model.out.OutboundEventType;
-import org.uwgb.compsci330.common.websocket.model.out.message.MessageCreatedEvent;
 import org.uwgb.compsci330.frontend.controller.base.CommonController;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChatController extends CommonController {
-    @FXML
-    private ImageView restoreButtonImage;
+    @FXML private ImageView restoreButtonImage;
+    @FXML private ListView<Relationship> friendsList;
+    @FXML private ListView<Message> messageList;
+    private Relationship selectedRelationship = null;
+
 
     protected ChatController(Parent parent, Stage stage, Client client) {
         super(parent, stage, client);
+    }
 
-        client.getWs().bus.on(OutboundEventType.HELLO, e -> {
-            System.out.println("Got hello event from server.");
+    @FXML
+    public void initialize() {
+        setupFriendsList();
+        setupMessageList();
+        setupEventListeners();
+        client.getWs().connect();
+    }
+
+    private void setupFriendsList() {
+        // custom cell factory to show friend username
+        friendsList.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Relationship item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getRequestee().getUsername()+ ":"+item.getRequestee().getStatus());
+                }
+            }
         });
+
+        // on friend selected, load messages
+        friendsList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                selectedRelationship = newVal;
+                loadMessages(newVal);
+            }
+        });
+
+        // load initial friends list
+        loadFriends();
+    }
+
+    private void setupMessageList() {
+        messageList.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Message item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.getSender().getUsername() + ": " + item.getContent());
+                }
+            }
+        });
+    }
+
+    private void setupEventListeners() {
+        client.getWs().bus.on(OutboundEventType.HELLO, e -> loadFriends());
+
+        AtomicInteger reconnectTest = new AtomicInteger();
 
         client.getWs().bus.on(OutboundEventType.MESSAGE_CREATED, e -> {
-            final MessageCreatedEvent event = (MessageCreatedEvent) e;
-            final SafeMessage message = event.getPayload();
+            reconnectTest.getAndIncrement();
 
-            System.out.printf("Got message: %s\n", message);
+
+            Message message = (Message) e;
+                Platform.runLater(() -> {
+                    messageList.getItems().add(message);
+                    messageList.scrollTo(messageList.getItems().size() - 1);
+                });
         });
-        client.getWs().connect();
+
+        client.getWs().bus.on(OutboundEventType.STATUS, e -> {
+            System.out.println("STATUS event received in UI: " + e);
+            System.out.println("Type: " + e.getClass().getName());
+            Platform.runLater(() -> friendsList.refresh());
+        });
+
+        client.getWs().bus.on(OutboundEventType.RELATIONSHIP_CREATED, e -> {
+            Relationship relationship = (Relationship) e;
+            Platform.runLater(() -> friendsList.getItems().add(relationship));
+        });
+
+        client.getWs().bus.on(OutboundEventType.RELATIONSHIP_DELETED, e -> {
+            String id = (String) e;
+            Platform.runLater(() ->
+                    friendsList.getItems().removeIf(r -> r.getId().equals(id))
+            );
+        });
+    }
+
+    private void loadFriends() {
+        // fetch from API on virtual thread, update UI on JavaFX thread
+        Thread.ofVirtual().start(() -> {
+            List<Relationship> relationships = null;
+            try {
+                relationships = client.getRelationships().fetchRelationships();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            List<Relationship> finalRelationships = relationships;
+            Platform.runLater(() -> {
+                friendsList.getItems().clear();
+                friendsList.getItems().addAll(finalRelationships);
+            });
+        });
+    }
+
+    private void loadMessages(Relationship relationship) {
+//        Thread.ofVirtual().start(() -> {
+//            List<Message> messages = client.getMessageApi()
+//                    .getMessages(relationship.getConversationId());
+//            Platform.runLater(() -> {
+//                messageList.getItems().clear();
+//                messageList.getItems().addAll(messages);
+//                messageList.scrollTo(messageList.getItems().size() - 1);
+//            });
+//        });
     }
 
     @FXML

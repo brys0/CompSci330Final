@@ -38,6 +38,7 @@ public class WebsocketHandler extends StatusWebsocket {
     public void onClientMessage(WebSocketSession session, InboundEvent<?> event) {
         switch(event.type) {
             case REQUEST_RESUME -> {
+                System.out.println("Received resume payload");
                 final RequestResumePayload resumePayload = mapper.convertValue(event.payload, RequestResumePayload.class);
                 try {
                     super.sendResume(resumePayload.seq(), session);

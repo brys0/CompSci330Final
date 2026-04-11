@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.uwgb.compsci330.common.model.response.user.SafeUser;
 
 public class SafeRelationship {
+
     @Getter
     private SafeUser requester;
 

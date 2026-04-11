@@ -2,14 +2,13 @@ package org.uwgb.compsci330.client_sdk.http;
 
 import okhttp3.Request;
 import org.uwgb.compsci330.client_sdk.Client;
-import org.uwgb.compsci330.client_sdk.entity.SelfUser;
 import org.uwgb.compsci330.common.model.request.user.LoginUserRequest;
 import org.uwgb.compsci330.common.model.request.user.RegisterUserRequest;
 import org.uwgb.compsci330.common.model.response.user.SafeUser;
 
 import java.io.IOException;
 
-public class HttpUserClient extends HttpClient{
+public class HttpUserClient extends HttpClient {
 
     public HttpUserClient(Client client) {
         super(client);
