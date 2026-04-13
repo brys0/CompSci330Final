@@ -79,7 +79,7 @@ public class SignInController extends CommonController {
 
     @FXML
     void signUp(ActionEvent event) throws IOException {
-        this.navigateTo("/xml/pages/signUp/signIn.fxml", new SignUpController(this.parent, this.stage, this.client));
+        this.navigateTo("/xml/pages/signUp/signUp.fxml", new SignUpController(this.parent, this.stage, this.client));
     }
 
     private double xOffset = 0;
