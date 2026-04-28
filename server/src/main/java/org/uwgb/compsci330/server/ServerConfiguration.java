@@ -7,7 +7,7 @@ public class ServerConfiguration extends Configuration {
     private ServerConfiguration() {
         super();
     }
-    public static final String SERVER_VERSION = "0.0.1";
+    public static final String SERVER_VERSION = "1.0.0";
     public static final String SYSTEM_USER = "System";
 
     // Should be base 64 encoded!!

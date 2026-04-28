@@ -3,12 +3,14 @@ plugins {
 	id("org.springframework.boot") version "4.0.2"
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.hibernate.orm") version "7.2.1.Final"
+	id("com.google.cloud.tools.jib") version "3.5.3"
 }
 
 group = "org.uwgb.compsci330"
 version = "0.0.1-SNAPSHOT"
 description = "API for Chat App written 100% in Java."
 
+val mainClass = "org.uwgb.compsci330.server.APIServerApplication"
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(25)
@@ -90,5 +92,18 @@ hibernate {
 	}
 }
 
+jib {
+	container {
+		mainClass = mainClass
+	}
 
+	to {
+		auth.apply {
+			username = "brys0"
+			password = System.getenv("JIB_TOKEN")
+		}
+
+		image = "ghcr.io/brys0/CompSci330Final"
+	}
+}
 

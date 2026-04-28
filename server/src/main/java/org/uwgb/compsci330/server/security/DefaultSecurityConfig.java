@@ -32,9 +32,10 @@ public class DefaultSecurityConfig {
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/ws").permitAll())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/health").permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/users/register").permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/users/login").permitAll())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/v3/*").permitAll())
+//                .authorizeHttpRequests(auth -> auth.requestMatchers("/v3/*").permitAll())
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
