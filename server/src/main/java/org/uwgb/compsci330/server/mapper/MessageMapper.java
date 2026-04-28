@@ -9,6 +9,7 @@ public class MessageMapper {
         final User sender = message.getSender();
         return new SafeMessage(
                 message.getId(),
+                message.getConversation().getId(),
                 sender != null ? UserMapper.toSafe(message.getSender()) : null,
                 message.getContent(),
                 message.getCreatedAt(),

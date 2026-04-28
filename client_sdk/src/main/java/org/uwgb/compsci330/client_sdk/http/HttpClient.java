@@ -4,6 +4,8 @@ import lombok.Getter;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uwgb.compsci330.client_sdk.Client;
 import org.uwgb.compsci330.client_sdk.ClientConfig;
 import org.uwgb.compsci330.client_sdk.entity.Entity;
@@ -17,12 +19,15 @@ public class HttpClient implements Entity {
     @Getter
     private final Client client;
     protected final ClientConfig config;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     public HttpClient(Client client) {
         this.client = client;
         this.config = client.getConfig();
     }
 
     protected Request.Builder createRequestWithAuthorization(String path) {
+        logger.debug("Creating Authorized request at: {}, with token: {}", path, config.getToken());
         return this.createRequest(path).header("Authorization", config.getToken());
     }
 

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import org.uwgb.compsci330.client_sdk.cache.CacheManager;
 import org.uwgb.compsci330.client_sdk.entity.relationship.Relationship;
 import org.uwgb.compsci330.client_sdk.entity.user.SelfUser;
+import org.uwgb.compsci330.client_sdk.http.HttpMessagesClient;
 import org.uwgb.compsci330.client_sdk.http.HttpRelationshipClient;
 import org.uwgb.compsci330.client_sdk.http.HttpUserClient;
 import org.uwgb.compsci330.client_sdk.manager.RelationshipManager;
@@ -13,6 +14,8 @@ import org.uwgb.compsci330.common.model.request.user.LoginUserRequest;
 import org.uwgb.compsci330.common.model.request.user.RegisterUserRequest;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Client {
     @Getter
@@ -28,6 +31,9 @@ public class Client {
     private final HttpUserClient httpUserClient;
 
     @Getter
+    private final HttpMessagesClient httpMessagesClient;
+
+    @Getter
     private final CacheManager cache;
 
     @Getter
@@ -37,10 +43,21 @@ public class Client {
     @Getter
     private final WebSocketManager ws;
 
+    private final Map<String, String> userToConversation = new ConcurrentHashMap<>();
+
+    public void registerConversation(String userId, String conversationId) {
+        userToConversation.put(userId, conversationId);
+    }
+
+    public String getConversationId(String userId) {
+        return userToConversation.get(userId);
+    }
+
     public Client(ClientConfig config) {
         this.config = config;
         this.httpRelationshipClient = new HttpRelationshipClient(this);
         this.httpUserClient = new HttpUserClient(this);
+        this.httpMessagesClient = new HttpMessagesClient(this);
         this.ws = new WebSocketManager(this);
         this.cache = new CacheManager(this);
         this.relationships = new RelationshipManager(this);

@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.uwgb.compsci330.common.exception.*;
+import org.uwgb.compsci330.common.model.request.message.CreateMessageRequest;
 import org.uwgb.compsci330.common.model.response.ErrorResponse;
 import org.uwgb.compsci330.common.model.response.message.SafeMessage;
-import org.uwgb.compsci330.server.dto.request.CreateMessageRequest;
 import org.uwgb.compsci330.server.service.ConversationService;
 
 import java.util.List;
@@ -16,7 +16,6 @@ import java.util.List;
 public class MessagesController {
     @Autowired
     private ConversationService conversationService;
-
     @GetMapping("/{friendId}/messages")
     @ResponseStatus(HttpStatus.OK)
     public List<SafeMessage> getMessages(

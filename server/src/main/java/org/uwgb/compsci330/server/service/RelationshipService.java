@@ -12,6 +12,7 @@ import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipD
 import org.uwgb.compsci330.common.websocket.model.out.relationship.RelationshipPendingEvent;
 import org.uwgb.compsci330.server.annotation.FragileSensitiveApi;
 import org.uwgb.compsci330.server.annotation.SensitiveApi;
+import org.uwgb.compsci330.server.entity.conversation.Conversation;
 import org.uwgb.compsci330.server.entity.relationship.Relationship;
 import org.uwgb.compsci330.server.entity.user.User;
 import org.uwgb.compsci330.server.mapper.RelationshipMapper;
@@ -79,13 +80,15 @@ public class RelationshipService {
 
             boolean outgoingRequest = existingRelationship.isOutgoingRequest(userId);
             if (outgoingRequest) throw OutgoingRequestAlreadyExistsException.create(existingRelationship.getRequestee().getUsername());
+            final Conversation convo =  conversationService.createConversation(Set.of(requester, otherUser));
 
             // Friendship should be accepted.
+            existingRelationship.setConversation(convo);
             existingRelationship.setStatus(RelationshipStatus.ACCEPTED);
-            relationshipRepository.save(existingRelationship);
-            final SafeRelationship relationship = RelationshipMapper.toSafe(existingRelationship);
 
-            conversationService.createConversation(Set.of(requester, otherUser));
+            relationshipRepository.save(existingRelationship);
+
+            final SafeRelationship relationship = RelationshipMapper.toSafe(existingRelationship);
 
             publisher.publishEvent(
                     new EventEnvelope<>(

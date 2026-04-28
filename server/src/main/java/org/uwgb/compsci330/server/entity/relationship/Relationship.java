@@ -1,7 +1,10 @@
 package org.uwgb.compsci330.server.entity.relationship;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.uwgb.compsci330.common.model.response.relationship.RelationshipStatus;
+import org.uwgb.compsci330.server.entity.conversation.Conversation;
 import org.uwgb.compsci330.server.entity.user.User;
 
 @Entity(name = "relationships")
@@ -28,6 +31,12 @@ public class Relationship {
 
     @Enumerated(EnumType.STRING)
     private RelationshipStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "conversation_id")
+    @Setter
+    @Getter
+    private Conversation conversation;
 
     public Relationship() {}
 

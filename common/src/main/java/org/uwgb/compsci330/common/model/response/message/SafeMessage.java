@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 
 public class SafeMessage {
     @Getter
+    private String conversationId;
+
+    @Getter
     private String id;
 
     @Getter
@@ -28,6 +31,7 @@ public class SafeMessage {
 
     public SafeMessage(
             String id,
+            String conversationId,
             SafeUser sender,
             String content,
             LocalDateTime createdAt,
@@ -35,6 +39,7 @@ public class SafeMessage {
             MessageType type
     ) {
         this.id = id;
+        this.conversationId = conversationId;
         this.sender = sender;
         this.content = content;
         this.createdAt = createdAt;

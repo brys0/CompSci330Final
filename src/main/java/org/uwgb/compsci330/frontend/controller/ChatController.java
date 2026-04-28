@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import org.uwgb.compsci330.client_sdk.Client;
 import org.uwgb.compsci330.client_sdk.entity.message.Message;
 import org.uwgb.compsci330.client_sdk.entity.relationship.Relationship;
+import org.uwgb.compsci330.client_sdk.entity.user.User;
 import org.uwgb.compsci330.common.websocket.model.out.OutboundEventType;
 import org.uwgb.compsci330.frontend.controller.base.CommonController;
 
@@ -43,12 +44,14 @@ public class ChatController extends CommonController {
         // custom cell factory to show friend username
         friendsList.setCellFactory(lv -> new ListCell<>() {
             @Override
-            protected void updateItem(Relationship item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
+            protected void updateItem(Relationship relationship, boolean empty) {
+                super.updateItem(relationship, empty);
+                if (empty || relationship == null) {
                     setText(null);
                 } else {
-                    setText(item.getRequestee().getUsername()+ ":"+item.getRequestee().getStatus());
+                    final User friend = relationship.getUser();
+
+                    setText(String.format("%s: %s", friend.getUsername(), friend.getStatus()));
                 }
             }
         });
@@ -84,12 +87,19 @@ public class ChatController extends CommonController {
 
         AtomicInteger reconnectTest = new AtomicInteger();
 
+
         client.getWs().bus.on(OutboundEventType.MESSAGE_CREATED, e -> {
+            System.out.println("Message create event received.");
             reconnectTest.getAndIncrement();
 
 
             Message message = (Message) e;
                 Platform.runLater(() -> {
+                    try {
+                        ((Message) e).getConversation().createMessage(String.format("echo: %s", ((Message) e).getContent()));
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                     messageList.getItems().add(message);
                     messageList.scrollTo(messageList.getItems().size() - 1);
                 });
@@ -103,6 +113,7 @@ public class ChatController extends CommonController {
 
         client.getWs().bus.on(OutboundEventType.RELATIONSHIP_CREATED, e -> {
             Relationship relationship = (Relationship) e;
+
             Platform.runLater(() -> friendsList.getItems().add(relationship));
         });
 
