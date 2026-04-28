@@ -24,8 +24,9 @@ public class JWTAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        logger.error("Unauthorization exception for request to {}", request.getPathInfo());
+        logger.error("Unauthorized exception for request to {}", request.getPathInfo());
         authException.printStackTrace();
+
         response
                 .getWriter()
                 .write(

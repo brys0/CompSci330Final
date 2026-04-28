@@ -22,7 +22,7 @@
    <children>
       <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="10.0" styleClass="primary">
          <children>
-            <Label alignment="CENTER" style="-fx-effect: dropshadow(gaussian, #003a34, 3, 1, 0, 0);" text="PLACEHOLDER">
+            <Label alignment="CENTER" style="-fx-effect: dropshadow(gaussian, #003a34, 3, 1, 0, 0);" text="Chatty">
                <font>
                   <Font name="FreeMono" size="50.0" />
                </font>
