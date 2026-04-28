@@ -18,4 +18,4 @@ jobs:
           JIB_TOKEN: ${{ secrets.JIB_TOKEN }}
         run: |
           chmod +x ./gradlew
-          ./gradlew jib -Djib.serialize=true --no-daemon --configuration-cache --build-cache --scan
+          ./gradlew jib -Djib.serialize=true --no-daemon --build-cache --scan
