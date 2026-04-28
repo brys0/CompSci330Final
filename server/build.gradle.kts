@@ -103,7 +103,7 @@ jib {
 			password = System.getenv("JIB_TOKEN")
 		}
 
-		image = "ghcr.io/brys0/CompSci330Final"
+		image = "ghcr.io/brys0/compscifinal"
 	}
 }
 
