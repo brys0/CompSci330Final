@@ -1,7 +1,4 @@
-# JavaFX Project
-
-I have prior experience creating Real Time Chat Applications, although not in JavaFX specifically.
-If we are all okay with pursuing that direction, that is what we'll do for this term final!
+# JavaFX Project: Chat Application
 
 ## How it works
 - API
@@ -16,13 +13,3 @@ If we are all okay with pursuing that direction, that is what we'll do for this 
   - Receives messages via websocket
   - Sends messages via HTTP API
   - Saves token to local db
-
-
-
-What would you all like to do?
-
-- We can have someone to design the API (I will host it)
-- We can have someone handle the style of the main application.
-- Someone to create Unit Tests
-- and so on...
-
