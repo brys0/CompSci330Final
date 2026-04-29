@@ -11,8 +11,8 @@ public class ClientSingleton {
     private ClientSingleton() {
         this.client = new Client(
                 new ClientConfig(
-                        "http://localhost:8080", // TODO: Configure page to let user set the server to use.
-                        "ws://localhost:8080"
+                        "https://chatty.brys.me", // TODO: Configure page to let user set the server to use.
+                        "wss://chatty.brys.me"
                 )
         );
     }
