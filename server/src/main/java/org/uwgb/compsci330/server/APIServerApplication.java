@@ -9,9 +9,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+
 @SpringBootApplication
 @RestController
 public class APIServerApplication {
+	final public static String startTime = new Date(System.currentTimeMillis()).toString();
 	@Bean
 	@SuppressWarnings("unused")
 	public PasswordEncoder encoder() {
@@ -29,6 +32,7 @@ public class APIServerApplication {
 
 	static void main(String[] args)
 	{
+
 		SpringApplication.run(APIServerApplication.class, args);
 	}
 }

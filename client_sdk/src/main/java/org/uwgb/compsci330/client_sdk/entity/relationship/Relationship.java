@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.uwgb.compsci330.client_sdk.Client;
 import org.uwgb.compsci330.client_sdk.entity.IdentifiableEntity;
 import org.uwgb.compsci330.client_sdk.entity.user.User;
+import org.uwgb.compsci330.client_sdk.manager.MessageManager;
 import org.uwgb.compsci330.common.model.response.relationship.RelationshipStatus;
 import org.uwgb.compsci330.common.model.response.relationship.SafeRelationship;
 import org.uwgb.compsci330.common.model.response.user.SafeUser;
@@ -15,10 +16,13 @@ public class Relationship implements IdentifiableEntity {
     @Getter
     private final Client client;
     private final SafeRelationship relationship;
+    @Getter
+    public final MessageManager conversation;
 
     public Relationship(Client client, SafeRelationship relationship) {
         this.client = client;
         this.relationship = relationship;
+        this.conversation = new MessageManager(client, this, relationship.getConversationId());
     }
 
     @Override
@@ -26,6 +30,12 @@ public class Relationship implements IdentifiableEntity {
         return createRelationshipKey(client, this.relationship);
     }
 
+    public User getUser() {
+        assert client.getSelf() != null;
+        if (Objects.equals(this.getRequestee().getId(), client.getSelf().getId())) return this.getRequester();
+
+        return this.getRequestee();
+    }
     public User getRequester() {
         return this
                 .client

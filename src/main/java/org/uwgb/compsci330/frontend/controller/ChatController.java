@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -13,19 +14,27 @@ import javafx.stage.Stage;
 import org.uwgb.compsci330.client_sdk.Client;
 import org.uwgb.compsci330.client_sdk.entity.message.Message;
 import org.uwgb.compsci330.client_sdk.entity.relationship.Relationship;
+import org.uwgb.compsci330.client_sdk.entity.user.User;
 import org.uwgb.compsci330.common.websocket.model.out.OutboundEventType;
 import org.uwgb.compsci330.frontend.controller.base.CommonController;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Objects;
 
 public class ChatController extends CommonController {
-    @FXML private ImageView restoreButtonImage;
-    @FXML private ListView<Relationship> friendsList;
-    @FXML private ListView<Message> messageList;
-    private Relationship selectedRelationship = null;
+    private static int MAX_FETCH_SIZE = 100;
 
+    @FXML
+    private ImageView restoreButtonImage;
+    @FXML
+    private ListView<Relationship> friendsList;
+    @FXML
+    private ListView<Message> messageList;
+    private Relationship selectedRelationship = null;
+    private boolean isLoadingMessages = false;
+    private boolean hasMoreMessages = true;
 
     protected ChatController(Parent parent, Stage stage, Client client) {
         super(parent, stage, client);
@@ -37,30 +46,81 @@ public class ChatController extends CommonController {
         setupMessageList();
         setupEventListeners();
         client.getWs().connect();
+
+        // You can add "create" a relationship like this
+        // client
+        // .getRelationships()
+        // .createRelationship("some username")
+        // Delete them like this
+        // client
+        // .getRelationships()
+        // .deleteRelationship(username, relationshipId);
     }
 
     private void setupFriendsList() {
         // custom cell factory to show friend username
         friendsList.setCellFactory(lv -> new ListCell<>() {
             @Override
-            protected void updateItem(Relationship item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
+            protected void updateItem(Relationship relationship, boolean empty) {
+                super.updateItem(relationship, empty);
+                if (empty || relationship == null) {
                     setText(null);
                 } else {
-                    setText(item.getRequestee().getUsername()+ ":"+item.getRequestee().getStatus());
+                    final User friend = relationship.getUser();
+
+                    setText(String.format("%s: %s", friend.getUsername(), friend.getStatus()));
                 }
             }
         });
 
         // on friend selected, load messages
         friendsList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            messageList.getItems().clear();
+            hasMoreMessages = true;
+
             if (newVal != null) {
                 selectedRelationship = newVal;
-                loadMessages(newVal);
+                loadMessages(newVal, null);
+
+                Platform.runLater(() -> {
+                    messageList.scrollTo(messageList.getItems().size() - 1);
+                });
             }
         });
 
+
+        messageList.skinProperty().addListener((obs, oldSkin, newSkin) -> {
+            if (newSkin == null) return;
+            ScrollBar scrollBar = (ScrollBar) messageList.lookup(".scroll-bar:vertical");
+            if (scrollBar == null) return;
+
+            scrollBar.valueProperty().addListener((o, oldVal, newVal) -> {
+                if (newVal.doubleValue() < 0.02 && !isLoadingMessages && hasMoreMessages && selectedRelationship != null && !messageList.getItems().isEmpty()) {
+                    Message oldest = messageList.getItems().getFirst();
+                    isLoadingMessages = true;
+
+                    Thread.ofVirtual().start(() -> {
+                        try {
+                            List<Message> older = selectedRelationship.getConversation()
+                                    .fetchMessages(MAX_FETCH_SIZE, null, oldest.getId());
+
+                            Platform.runLater(() -> {
+                                if (older.isEmpty() || older.size() < MAX_FETCH_SIZE) {
+                                    hasMoreMessages = false;
+                                }
+
+                                messageList.getItems().addAll(0, older);
+                                messageList.scrollTo(older.size());
+                                isLoadingMessages = false;
+                            });
+                        } catch (IOException e) {
+                            isLoadingMessages = false;
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+            });
+        });
         // load initial friends list
         loadFriends();
     }
@@ -80,29 +140,36 @@ public class ChatController extends CommonController {
     }
 
     private void setupEventListeners() {
-        client.getWs().bus.on(OutboundEventType.HELLO, e -> loadFriends());
-
-        AtomicInteger reconnectTest = new AtomicInteger();
+        loadFriends();
 
         client.getWs().bus.on(OutboundEventType.MESSAGE_CREATED, e -> {
-            reconnectTest.getAndIncrement();
-
+            System.out.println("Message create event received.");
 
             Message message = (Message) e;
-                Platform.runLater(() -> {
-                    messageList.getItems().add(message);
-                    messageList.scrollTo(messageList.getItems().size() - 1);
-                });
+
+            if (!Objects.equals(message.getConversation().getConversationId(), selectedRelationship.getConversation().getConversationId())) return;
+
+            Platform.runLater(() -> {
+                messageList.getItems().add(message);
+                messageList.scrollTo(messageList.getItems().size() - 1);
+            });
+        });
+
+        client.getWs().bus.on(OutboundEventType.MESSAGE_DELETED, e -> {
+            Platform.runLater(() -> {
+                messageList
+                        .getItems()
+                        .removeIf(m -> Objects.equals(m.getId(), e));
+            });
         });
 
         client.getWs().bus.on(OutboundEventType.STATUS, e -> {
-            System.out.println("STATUS event received in UI: " + e);
-            System.out.println("Type: " + e.getClass().getName());
             Platform.runLater(() -> friendsList.refresh());
         });
 
         client.getWs().bus.on(OutboundEventType.RELATIONSHIP_CREATED, e -> {
             Relationship relationship = (Relationship) e;
+
             Platform.runLater(() -> friendsList.getItems().add(relationship));
         });
 
@@ -131,16 +198,21 @@ public class ChatController extends CommonController {
         });
     }
 
-    private void loadMessages(Relationship relationship) {
-//        Thread.ofVirtual().start(() -> {
-//            List<Message> messages = client.getMessageApi()
-//                    .getMessages(relationship.getConversationId());
-//            Platform.runLater(() -> {
-//                messageList.getItems().clear();
-//                messageList.getItems().addAll(messages);
-//                messageList.scrollTo(messageList.getItems().size() - 1);
-//            });
-//        });
+    private void loadMessages(Relationship relationship, String beforeId) {
+        Thread.ofVirtual().start(() -> {
+            try {
+                List<Message> messages = relationship.getConversation()
+                        .fetchMessages(20, null, beforeId);
+
+                Platform.runLater(() -> {
+                    messageList.getItems().clear();
+                    messageList.getItems().addAll(messages);
+                    messageList.scrollTo(messageList.getItems().size() - 1);
+                });
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @FXML

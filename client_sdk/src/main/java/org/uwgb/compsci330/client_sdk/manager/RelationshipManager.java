@@ -57,7 +57,11 @@ public class RelationshipManager implements Entity {
 
         for (SafeRelationship relationship : client.getHttpRelationshipClient().getRelationships()) {
             final Relationship entityRelationship = new Relationship(client, relationship);
-
+            client.getCache().put(
+                    entityRelationship.getConversation().getId(),
+                    MessageManager.class,
+                    entityRelationship.conversation
+            );
             client
                     .getCache()
                     .put(entityRelationship.getId(), Relationship.class, entityRelationship);
