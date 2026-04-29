@@ -1,5 +1,8 @@
 # JavaFX Project: Chat Application
 
+## API URL
+https://chatty.brys.me/
+
 ## How it works
 - API
   - Authenticate Clients (Think basic Password + Salt SHA512 or HMAC) uses token for requests.
