@@ -16,6 +16,7 @@ import org.uwgb.compsci330.client_sdk.entity.relationship.Relationship;
 import org.uwgb.compsci330.client_sdk.entity.user.User;
 import org.uwgb.compsci330.client_sdk.event.EventListener;
 import org.uwgb.compsci330.client_sdk.websocket.WebSocketManager;
+import org.uwgb.compsci330.common.model.response.relationship.RelationshipStatus;
 import org.uwgb.compsci330.common.websocket.model.out.OutboundEventType;
 import org.uwgb.compsci330.frontend.controller.base.CommonController;
 import org.uwgb.compsci330.frontend.util.FXMLUtils;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class FriendController extends CommonController {
     private final Stage ownerStage;
@@ -119,14 +121,14 @@ public class FriendController extends CommonController {
 
         Platform.runLater(() -> {
             try {
-                final List<Relationship> relationships = client.getRelationships().fetchRelationships();
+                final Stream<Relationship> relationships = client.getRelationships().fetchRelationships().stream().filter(r -> r.getStatus() == RelationshipStatus.PENDING);
 
-                relationships.stream().filter(Relationship::isOutgoing).forEach(r -> {
-                    outgoingList.add(r.getUser());
-                });
-
-                relationships.stream().filter(Relationship::isIncoming).forEach(r -> {
-                   incomingList.add(r.getUser());
+                relationships.forEach(r -> {
+                    if (r.isOutgoing()) {
+                        outgoingList.add(r.getUser());
+                    } else {
+                        incomingList.add(r.getUser());
+                    }
                 });
             } catch (IOException e) {
                 throw new RuntimeException(e);
