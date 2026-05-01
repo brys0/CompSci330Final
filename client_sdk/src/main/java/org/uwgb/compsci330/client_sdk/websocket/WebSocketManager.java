@@ -106,8 +106,8 @@ public class WebSocketManager implements Entity {
     public void disconnect() {
         if (ws != null) ws.disconnect();
 
-        wsThread = null;
         ws = null;
+        wsThread = null;
     }
 
     public void forceDisconnect() {

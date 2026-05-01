@@ -72,7 +72,9 @@ public class ChatController extends CommonController {
                 super.updateItem(relationship, empty);
                 if (empty || relationship == null) {
                     setText(null);
+                    setGraphic(null);
                 } else {
+                    setGraphic(null);
                     final User friend = relationship.getUser();
 
                     setText(String.format("%s: %s", friend.getUsername(), friend.getStatus()));

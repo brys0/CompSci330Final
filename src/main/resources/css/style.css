@@ -44,3 +44,47 @@ ScrollPane {
 #chatMenu HBox Button {
     -fx-background-color: transparent;
 }
+
+/* The background of the entire ListView */
+.list-view {
+    -fx-background-color: #2f3136; /* Dark Discord-like grey */
+}
+
+/* The individual cells */
+.list-cell {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: white;
+    -fx-padding: 10px;
+}
+
+
+/* When you hover over a friend */
+.list-cell:hover {
+    -fx-background-color: #4f545c;
+}
+
+/* When a friend is selected */
+.list-cell:selected {
+    -fx-background-color: #5865f2; /* Blurple */
+    -fx-text-fill: white;
+}
+
+
+.text-area {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: white;
+    -fx-border-color: #4f545c;
+}
+
+.text-area .content {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: white;
+    -fx-border-color: #4f545c;
+    -fx-border-radius: 4px;
+    -fx-prompt-text-fill: #72767d; /* Color of the placeholder text */
+}
+
+/* Focused state to avoid bright blue glowing borders */
+.text-area:focused {
+    -fx-border-color: #5865f2;
+}
