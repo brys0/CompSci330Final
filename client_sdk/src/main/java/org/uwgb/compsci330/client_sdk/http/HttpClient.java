@@ -51,8 +51,7 @@ public class HttpClient implements Entity {
     protected  <T> T execute(Request request, Class<T> type) throws IOException {
         final String req = execute(request);
 
-        System.out.println(req);
-        return config.getObjectMapper().readValue(execute(request), type);
+        return config.getObjectMapper().readValue(req, type);
     }
 
     protected  <T> List<T> executeForList(Request request, Class<T> type) throws IOException {

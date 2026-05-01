@@ -35,7 +35,6 @@ public class MessageManager implements IdentifiableEntity {
 
 
     public Message createMessage(String content) throws IOException {
-        System.out.println("Creating message");
         final SafeMessage created =
                 client
                         .getHttpMessagesClient()

@@ -43,7 +43,7 @@ public class SettingsController extends CommonController {
     void signOutButtonPress(ActionEvent event) throws IOException {
         // Must clean up socket explicitly
         // TODO: Socket manager that integrates with JavaFX to clean up resources appropriately
-        client.getWs().disconnect();
+        client.getWs().forceDisconnect();
         client.getWs().bus.removeAllListeners();
 
         stage.close(); // close settings

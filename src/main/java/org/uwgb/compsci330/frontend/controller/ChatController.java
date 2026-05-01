@@ -24,6 +24,7 @@ import org.uwgb.compsci330.frontend.controller.base.CommonController;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -101,28 +102,41 @@ public class ChatController extends CommonController {
             if (scrollBar == null) return;
 
             scrollBar.valueProperty().addListener((o, oldVal, newVal) -> {
-                if (newVal.doubleValue() < 0.02 && !isLoadingMessages && hasMoreMessages && selectedRelationship != null && !messageList.getItems().isEmpty()) {
+                // 1. Check isLoading immediately before doing ANYTHING
+                if (isLoadingMessages || !hasMoreMessages) return;
+
+                if (newVal.doubleValue() < 0.02) {
+                    isLoadingMessages = true; // Set this IMMEDIATELY on the UI thread
+
                     Message oldest = messageList.getItems().getFirst();
-                    isLoadingMessages = true;
+                    String oldestId = oldest.getId();
 
                     Thread.ofVirtual().start(() -> {
                         try {
                             List<Message> older = selectedRelationship.getConversation()
-                                    .fetchMessages(MAX_FETCH_SIZE, null, oldest.getId());
+                                    .fetchMessages(MAX_FETCH_SIZE, null, oldestId);
 
+                            // 2. We are still on a background thread.
+                            // We need to jump back to UI thread to modify the list.
                             Platform.runLater(() -> {
-                                if (older.isEmpty() || older.size() < MAX_FETCH_SIZE) {
-                                    hasMoreMessages = false;
+                                try {
+                                    if (older.isEmpty()) {
+                                        hasMoreMessages = false;
+                                    } else {
+                                        messageList.getItems().addAll(0, older);
+
+                                        messageList.getItems().sort(Comparator.comparing(Message::getCreatedAt));
+
+                                        messageList.scrollTo(older.size());
+                                    }
+                                } finally {
+                                    // 3. ONLY allow more loading AFTER the UI has finished rendering
+                                    isLoadingMessages = false;
                                 }
-
-                                messageList.getItems().addAll(0, older);
-
-                                messageList.scrollTo(older.size());
-                                isLoadingMessages = false;
                             });
                         } catch (IOException e) {
-                            isLoadingMessages = false;
-                            throw new RuntimeException(e);
+                            Platform.runLater(() -> isLoadingMessages = false);
+                            e.printStackTrace();
                         }
                     });
                 }
@@ -220,11 +234,14 @@ public class ChatController extends CommonController {
         Thread.ofVirtual().start(() -> {
             try {
                 List<Message> messages = relationship.getConversation()
-                        .fetchMessages(20, null, beforeId);
+                        .fetchMessages(50, null, beforeId).reversed();
 
                 Platform.runLater(() -> {
                     messageList.getItems().clear();
-                    messageList.getItems().addAll(messages.reversed());
+
+                    for (var message : messages) {
+                        messageList.getItems().add(message);
+                    }
 
                     messageList.scrollTo(messageList.getItems().size() - 1);
                 });
@@ -292,17 +309,16 @@ public class ChatController extends CommonController {
     }
 
     public void sendButtonPress(ActionEvent actionEvent) {
-        System.out.println("Sending...");
         final String message = messageTextArea.getText();
 
         Thread.ofVirtual().start(() -> {
-            System.out.println("Sending... virtual thread");
             if (selectedRelationship != null) {
                 try {
                     selectedRelationship.getConversation().createMessage(message);
 
                     Platform.runLater(() -> {
                         sendButton.setDisable(false);
+                        messageTextArea.clear();
                     });
                 } catch (IOException e) {
                     throw new RuntimeException(e);
