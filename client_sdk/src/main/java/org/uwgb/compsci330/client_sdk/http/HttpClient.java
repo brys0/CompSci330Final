@@ -36,6 +36,7 @@ public class HttpClient implements Entity {
     }
 
     protected <T> RequestBody createBody(T type) {
+
         return RequestBody.create(this.config.getObjectMapper().writeValueAsBytes(type));
     }
 

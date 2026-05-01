@@ -59,7 +59,7 @@ public class HttpMessagesClient extends HttpClient {
 
     public SafeMessage createMessage(String friendId, CreateMessageRequest messageRequest) throws IOException {
         final Request request = this
-                .createRequestWithAuthorization(String.format("/%s/messsages", friendId))
+                .createRequestWithAuthorization(String.format("/%s/messages", friendId))
                 .post(this.createBody(messageRequest))
                 .build();
 

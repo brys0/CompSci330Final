@@ -1,9 +1,11 @@
 package org.uwgb.compsci330.frontend.controller;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollBar;
@@ -16,6 +18,7 @@ import org.uwgb.compsci330.client_sdk.Client;
 import org.uwgb.compsci330.client_sdk.entity.message.Message;
 import org.uwgb.compsci330.client_sdk.entity.relationship.Relationship;
 import org.uwgb.compsci330.client_sdk.entity.user.User;
+import org.uwgb.compsci330.common.model.response.message.MessageType;
 import org.uwgb.compsci330.common.websocket.model.out.OutboundEventType;
 import org.uwgb.compsci330.frontend.controller.base.CommonController;
 
@@ -27,6 +30,7 @@ import java.util.Objects;
 public class ChatController extends CommonController {
     private static int MAX_FETCH_SIZE = 100;
     public TextArea messageTextArea;
+    public Button sendButton;
 
     @FXML
     private ImageView restoreButtonImage;
@@ -112,6 +116,7 @@ public class ChatController extends CommonController {
                                 }
 
                                 messageList.getItems().addAll(0, older);
+
                                 messageList.scrollTo(older.size());
                                 isLoadingMessages = false;
                             });
@@ -135,15 +140,63 @@ public class ChatController extends CommonController {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    final String senderUsername = item.getSender() != null ? item.getSender().getUsername() : "Unknown User";
-                    setText(senderUsername + ": " + item.getContent());
+                    setText(formatMessage(item));
                 }
             }
         });
     }
 
-    private void setupEventListeners() {
+    private String formatMessage(Message item) {
+        final User user = item.getSender();
+        final boolean isSystem = item.getType() == MessageType.SYSTEM;
+        final String formatted;
+        if (isSystem) {
+            formatted = item.getContent();
+        } else {
+            final String username = user == null ? "Unknown User" : user.getUsername();
+            formatted = String.format("%s: %s", username, item.getContent());
+        }
+        return formatted;
+    }
 
+    private void setupEventListeners() {
+        client.getWs().bus.on(OutboundEventType.MESSAGE_CREATED, e -> {
+            System.out.println("Message create event received.");
+
+            Message message = (Message) e;
+
+            if (!Objects.equals(message.getConversation().getConversationId(), selectedRelationship.getConversation().getConversationId())) return;
+
+            Platform.runLater(() -> {
+                messageList.getItems().add(message);
+                messageList.scrollTo(messageList.getItems().size() - 1);
+            });
+        });
+
+        client.getWs().bus.on(OutboundEventType.MESSAGE_DELETED, e -> {
+            Platform.runLater(() -> {
+                messageList
+                        .getItems()
+                        .removeIf(m -> Objects.equals(m.getId(), e));
+            });
+        });
+
+        client.getWs().bus.on(OutboundEventType.STATUS, e -> {
+            Platform.runLater(() -> friendsList.refresh());
+        });
+
+        client.getWs().bus.on(OutboundEventType.RELATIONSHIP_CREATED, e -> {
+            Relationship relationship = (Relationship) e;
+
+            Platform.runLater(() -> friendsList.getItems().add(relationship));
+        });
+
+        client.getWs().bus.on(OutboundEventType.RELATIONSHIP_DELETED, e -> {
+            String id = (String) e;
+            Platform.runLater(() ->
+                    friendsList.getItems().removeIf(r -> r.getId().equals(id))
+            );
+        });
     }
 
     private void loadFriends() {
@@ -171,7 +224,8 @@ public class ChatController extends CommonController {
 
                 Platform.runLater(() -> {
                     messageList.getItems().clear();
-                    messageList.getItems().addAll(messages);
+                    messageList.getItems().addAll(messages.reversed());
+
                     messageList.scrollTo(messageList.getItems().size() - 1);
                 });
             } catch (IOException e) {
@@ -238,14 +292,24 @@ public class ChatController extends CommonController {
     }
 
     public void sendButtonPress(ActionEvent actionEvent) {
+        System.out.println("Sending...");
         final String message = messageTextArea.getText();
 
-        if (selectedRelationship != null) {
-            try {
-                selectedRelationship.getConversation().createMessage(message);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        Thread.ofVirtual().start(() -> {
+            System.out.println("Sending... virtual thread");
+            if (selectedRelationship != null) {
+                try {
+                    selectedRelationship.getConversation().createMessage(message);
+
+                    Platform.runLater(() -> {
+                        sendButton.setDisable(false);
+                    });
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
+        });
+
+        sendButton.setDisable(true);
     }
 }
