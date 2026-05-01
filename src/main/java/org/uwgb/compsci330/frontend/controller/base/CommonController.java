@@ -20,14 +20,14 @@ public class CommonController {
     }
 
     protected <T> void navigateTo(String path, T controller) throws IOException {
-        final FXMLUtils.LoadedView<T> view = FXMLUtils.load(path, controller);
+        final FXMLUtils.LoadedView<T> view = FXMLUtils.load(path, controller, true);
 
         this.parent = view.root();
         stage.getScene().setRoot(view.root());
     }
 
     protected <T> void navigateTo(Stage targetStage, String path, T controller) throws IOException {
-        FXMLUtils.LoadedView<T> view = FXMLUtils.load(path, controller);
+        FXMLUtils.LoadedView<T> view = FXMLUtils.load(path, controller, true);
         targetStage.getScene().setRoot(view.root());
     }
 

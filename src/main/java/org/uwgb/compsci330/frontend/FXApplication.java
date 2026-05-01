@@ -23,7 +23,7 @@ public class FXApplication extends Application {
         stage.initStyle(StageStyle.UNDECORATED);
 
         SignInController signInController = new SignInController(null, stage, ClientSingleton.getInstance().getClient());
-        var view = FXMLUtils.load("/xml/pages/signIn/signIn.fxml", signInController);
+        var view = FXMLUtils.load("/xml/pages/signIn/signIn.fxml", signInController, true);
 
 
         Scene scene = new Scene(view.root());

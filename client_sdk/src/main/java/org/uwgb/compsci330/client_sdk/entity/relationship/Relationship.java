@@ -17,12 +17,14 @@ public class Relationship implements IdentifiableEntity {
     private final Client client;
     private final SafeRelationship relationship;
     @Getter
-    public final MessageManager conversation;
+    public MessageManager conversation;
 
     public Relationship(Client client, SafeRelationship relationship) {
         this.client = client;
         this.relationship = relationship;
-        this.conversation = new MessageManager(client, this, relationship.getConversationId());
+        if (relationship.getConversationId() != null) {
+            this.conversation = new MessageManager(client, this, relationship.getConversationId());
+        }
     }
 
     @Override
@@ -56,6 +58,14 @@ public class Relationship implements IdentifiableEntity {
                         User.class,
                         () -> new User(this.client, this.relationship.getRequestee())
                 );
+    }
+
+    public boolean isOutgoing() {
+        return Objects.equals(relationship.getRequestee().getId(), client.getSelf().getId());
+    }
+
+    public boolean isIncoming() {
+        return !this.isOutgoing();
     }
 
     public RelationshipStatus getStatus() {

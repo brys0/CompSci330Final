@@ -230,7 +230,8 @@ public class ChatController extends CommonController {
         yOffset = event.getSceneY();
     }
 
-    public void addFriendButtonPress(ActionEvent actionEvent) {
+    public void addFriendButtonPress(ActionEvent actionEvent) throws IOException {
+        FriendController.open(stage, client);
     }
 
     public void sendButtonPress(ActionEvent actionEvent) {

@@ -56,12 +56,18 @@ public class RelationshipManager implements Entity {
         final List<Relationship> newRelationships = new ArrayList<>();
 
         for (SafeRelationship relationship : client.getHttpRelationshipClient().getRelationships()) {
+            System.out.println(client.getConfig().getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(relationship));
+
             final Relationship entityRelationship = new Relationship(client, relationship);
-            client.getCache().put(
-                    entityRelationship.getConversation().getId(),
-                    MessageManager.class,
-                    entityRelationship.conversation
-            );
+
+            if (relationship.getConversationId() != null) {
+                client.getCache().put(
+                        entityRelationship.getConversation().getId(),
+                        MessageManager.class,
+                        entityRelationship.conversation
+                );
+            }
+
             client
                     .getCache()
                     .put(entityRelationship.getId(), Relationship.class, entityRelationship);

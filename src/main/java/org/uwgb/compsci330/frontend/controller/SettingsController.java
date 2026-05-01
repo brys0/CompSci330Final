@@ -30,8 +30,8 @@ public class SettingsController extends CommonController {
         SettingsController controller = new SettingsController(null, settingsStage, owner, client);
         FXMLUtils.LoadedView<SettingsController> view = FXMLUtils.load(
                 "/xml/pages/settings/settings.fxml",
-                controller
-        );
+                controller,
+                true);
 
         Scene scene = new Scene(view.root());
 

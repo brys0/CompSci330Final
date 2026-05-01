@@ -7,13 +7,16 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class FXMLUtils {
-    public static <T> LoadedView<T> load(String path, T controller) throws IOException {
+    public static <T> LoadedView<T> load(String path, T controller, boolean shouldLoadStyles) throws IOException {
         FXMLLoader loader = new FXMLLoader(FXMLUtils.class.getResource(path));
         loader.setControllerFactory(c -> controller);
         Parent root = loader.load();
-        root.getStylesheets().add(
-                Objects.requireNonNull(FXMLUtils.class.getResource("/css/style.css")).toExternalForm()
-        );
+        if (shouldLoadStyles) {
+            root.getStylesheets().add(
+                    Objects.requireNonNull(FXMLUtils.class.getResource("/css/style.css")).toExternalForm()
+            );
+        }
+
         return new LoadedView<>(root, loader.getController());
     }
 

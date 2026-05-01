@@ -23,7 +23,7 @@
             <HBox alignment="CENTER_RIGHT" prefHeight="35.0" prefWidth="534.0" spacing="12.0">
                <children>
                   <TextField fx:id="addFriendUsernameField" promptText="username" />
-                  <Button fx:id="sendRequestButton" mnemonicParsing="false" text="Send Request" />
+                  <Button fx:id="sendRequestButton" mnemonicParsing="false" onAction="#onRequestSent" text="Send Request" />
                </children>
                <padding>
                   <Insets right="12.0" />
