@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -25,6 +26,7 @@ import java.util.Objects;
 
 public class ChatController extends CommonController {
     private static int MAX_FETCH_SIZE = 100;
+    public TextArea messageTextArea;
 
     @FXML
     private ImageView restoreButtonImage;
@@ -236,5 +238,14 @@ public class ChatController extends CommonController {
     }
 
     public void sendButtonPress(ActionEvent actionEvent) {
+        final String message = messageTextArea.getText();
+
+        if (selectedRelationship != null) {
+            try {
+                selectedRelationship.getConversation().createMessage(message);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
