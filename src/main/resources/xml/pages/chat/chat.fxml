@@ -89,7 +89,7 @@
                </VBox.margin>
             </Button>
             <!-- add this -->
-            <ListView fx:id="friendsList" fixedCellSize="1.0" styleClass="secondary" VBox.vgrow="ALWAYS" />
+            <ListView fx:id="friendsList" styleClass="secondary" VBox.vgrow="ALWAYS" />
             <Button fx:id="addFriendButton" alignment="CENTER" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#addFriendButtonPress" text="Add Friend" textFill="#e0e4e8">
                <font>
                   <Font name="FreeSans Bold" size="18.0" />
