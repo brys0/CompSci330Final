@@ -18,7 +18,7 @@ public class FXApplication extends Application {
     public void start(Stage stage) throws IOException {
 
 
-        stage.setTitle("NAME HERE");
+        stage.setTitle("Chatty");
         stage.setResizable(false);
         stage.initStyle(StageStyle.UNDECORATED);
 

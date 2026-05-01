@@ -140,45 +140,7 @@ public class ChatController extends CommonController {
     }
 
     private void setupEventListeners() {
-        loadFriends();
 
-        client.getWs().bus.on(OutboundEventType.MESSAGE_CREATED, e -> {
-            System.out.println("Message create event received.");
-
-            Message message = (Message) e;
-
-            if (!Objects.equals(message.getConversation().getConversationId(), selectedRelationship.getConversation().getConversationId())) return;
-
-            Platform.runLater(() -> {
-                messageList.getItems().add(message);
-                messageList.scrollTo(messageList.getItems().size() - 1);
-            });
-        });
-
-        client.getWs().bus.on(OutboundEventType.MESSAGE_DELETED, e -> {
-            Platform.runLater(() -> {
-                messageList
-                        .getItems()
-                        .removeIf(m -> Objects.equals(m.getId(), e));
-            });
-        });
-
-        client.getWs().bus.on(OutboundEventType.STATUS, e -> {
-            Platform.runLater(() -> friendsList.refresh());
-        });
-
-        client.getWs().bus.on(OutboundEventType.RELATIONSHIP_CREATED, e -> {
-            Relationship relationship = (Relationship) e;
-
-            Platform.runLater(() -> friendsList.getItems().add(relationship));
-        });
-
-        client.getWs().bus.on(OutboundEventType.RELATIONSHIP_DELETED, e -> {
-            String id = (String) e;
-            Platform.runLater(() ->
-                    friendsList.getItems().removeIf(r -> r.getId().equals(id))
-            );
-        });
     }
 
     private void loadFriends() {
@@ -268,4 +230,9 @@ public class ChatController extends CommonController {
         yOffset = event.getSceneY();
     }
 
+    public void addFriendButtonPress(ActionEvent actionEvent) {
+    }
+
+    public void sendButtonPress(ActionEvent actionEvent) {
+    }
 }
