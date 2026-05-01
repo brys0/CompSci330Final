@@ -122,11 +122,11 @@ public class FriendController extends CommonController {
                 final List<Relationship> relationships = client.getRelationships().fetchRelationships();
 
                 relationships.stream().filter(Relationship::isOutgoing).forEach(r -> {
-                            outgoingList.add(r.getUser());
+                    outgoingList.add(r.getUser());
                 });
 
                 relationships.stream().filter(Relationship::isIncoming).forEach(r -> {
-                    outgoingList.add(r.getUser());
+                   incomingList.add(r.getUser());
                 });
             } catch (IOException e) {
                 throw new RuntimeException(e);
