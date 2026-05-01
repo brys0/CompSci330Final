@@ -133,7 +133,8 @@ public class ChatController extends CommonController {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(item.getSender().getUsername() + ": " + item.getContent());
+                    final String senderUsername = item.getSender() != null ? item.getSender().getUsername() : "Unknown User";
+                    setText(senderUsername + ": " + item.getContent());
                 }
             }
         });

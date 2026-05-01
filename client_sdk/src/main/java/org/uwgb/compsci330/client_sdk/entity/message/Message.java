@@ -30,6 +30,8 @@ public class Message implements IdentifiableEntity {
     }
 
     public User getSender() {
+        if (message.getSender() == null) return null;
+
         return this.client.getCache()
                 .getOrCreate(
                         message.getSender().getId(),
