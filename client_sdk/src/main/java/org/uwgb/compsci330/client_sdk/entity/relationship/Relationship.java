@@ -61,7 +61,7 @@ public class Relationship implements IdentifiableEntity {
     }
 
     public boolean isOutgoing() {
-        return Objects.equals(relationship.getRequestee().getId(), client.getSelf().getId());
+        return Objects.equals(relationship.getRequester().getId(), client.getSelf().getId());
     }
 
     public boolean isIncoming() {

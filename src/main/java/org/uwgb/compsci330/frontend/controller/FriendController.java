@@ -14,12 +14,15 @@ import javafx.stage.StageStyle;
 import org.uwgb.compsci330.client_sdk.Client;
 import org.uwgb.compsci330.client_sdk.entity.relationship.Relationship;
 import org.uwgb.compsci330.client_sdk.entity.user.User;
+import org.uwgb.compsci330.client_sdk.event.EventListener;
+import org.uwgb.compsci330.client_sdk.websocket.WebSocketManager;
 import org.uwgb.compsci330.common.websocket.model.out.OutboundEventType;
 import org.uwgb.compsci330.frontend.controller.base.CommonController;
 import org.uwgb.compsci330.frontend.util.FXMLUtils;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class FriendController extends CommonController {
@@ -64,14 +67,22 @@ public class FriendController extends CommonController {
 
     @FXML
     void onRequestSent(ActionEvent event) {
-        System.out.println("Request sent");
-        final String username = addFriendUsernameField.textProperty().getValue();
+        final String username = addFriendUsernameField.getText();
+        if (username == null || username.isEmpty()) return;
+
+        // 1. Disable the button immediately to prevent double-clicks
+        sendRequestButton.setDisable(true);
 
         Platform.runLater(() -> {
             try {
                 client.getRelationships().createRelationship(username);
+                addFriendUsernameField.clear();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                // Handle error (maybe show an alert)
+                e.printStackTrace();
+            } finally {
+                // 2. Re-enable on the UI thread after the request finishes
+                Platform.runLater(() -> sendRequestButton.setDisable(false));
             }
         });
     }
@@ -84,6 +95,28 @@ public class FriendController extends CommonController {
 
         outgoingRequestList.setCellFactory((r) -> new OutgoingRequestListCell());
         incomingRequestList.setCellFactory((r) -> new IncomingRequestListCell());
+
+        final WebSocketManager manager = client.getWs();
+
+        final EventListener<String> relationshipDeleted = manager.bus.on(OutboundEventType.RELATIONSHIP_DELETED, (String user) -> {
+            Platform.runLater(() -> {
+                if (!outgoingList.removeIf(r -> Objects.equals(r.getId(), user))) {
+                    incomingList.removeIf(r -> Objects.equals(r.getId(), user));
+                };
+            });
+        });
+
+
+        final EventListener<Relationship> relationshipCreated = manager.bus.on(OutboundEventType.RELATIONSHIP_PENDING, (Relationship rel) -> {
+            Platform.runLater(() -> {
+                if (rel.isOutgoing()) {
+                    outgoingList.add(rel.getRequestee());
+                } else {
+                    incomingList.add(rel.getRequester());
+                }
+            });
+        });
+
         Platform.runLater(() -> {
             try {
                 final List<Relationship> relationships = client.getRelationships().fetchRelationships();

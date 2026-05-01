@@ -56,13 +56,14 @@ public class EntityEventHandler {
             }
             case RELATIONSHIP_DELETED -> {
                 RelationshipDeletedEvent e = (RelationshipDeletedEvent) event;
+                final Relationship rel = new Relationship(client, e.getPayload());
                 final String relationshipKey = Relationship.createRelationshipKey(client, e.getPayload());
 
                 client
                         .getCache()
                         .invalidate(relationshipKey);
 
-                bus.dispatch(event.getType(), relationshipKey); // just the id, entity is gone
+                bus.dispatch(event.getType(), rel.getUser().getId()); // just the id, entity is gone
             }
             case MESSAGE_CREATED -> {
                 MessageCreatedEvent e = (MessageCreatedEvent) event;
