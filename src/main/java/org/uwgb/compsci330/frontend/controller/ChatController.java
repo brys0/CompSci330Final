@@ -3,15 +3,19 @@ package org.uwgb.compsci330.frontend.controller;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.uwgb.compsci330.client_sdk.Client;
@@ -32,6 +36,7 @@ public class ChatController extends CommonController {
     private static int MAX_FETCH_SIZE = 100;
     public TextArea messageTextArea;
     public Button sendButton;
+    public Label friendName;
 
     @FXML
     private ImageView restoreButtonImage;
@@ -62,6 +67,16 @@ public class ChatController extends CommonController {
         // client
         // .getRelationships()
         // .deleteRelationship(username, relationshipId);
+
+        messageTextArea.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+            if (keyEvent.getCode() != KeyCode.ENTER) return;
+            if (keyEvent.isShiftDown()) {
+                messageTextArea.appendText("\n");
+                return;
+            };
+
+            sendButtonPress(null);
+        });
     }
 
     private void setupFriendsList() {
@@ -89,6 +104,7 @@ public class ChatController extends CommonController {
 
             if (newVal != null) {
                 selectedRelationship = newVal;
+                friendName.setText(newVal.getUser().getUsername());
                 loadMessages(newVal, null);
 
                 Platform.runLater(() -> {

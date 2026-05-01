@@ -76,6 +76,12 @@ ScrollPane {
     -fx-border-color: #4f545c;
 }
 
+.tertiary {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: white;
+    -fx-border-width: 0;
+}
+
 .text-area .content {
     -fx-background-color: #2f3136;
     -fx-text-fill: white;

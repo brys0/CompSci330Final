@@ -35,6 +35,5 @@ public class CommonController {
         this.navigateTo(path, controller);
 
         stage.setResizable(true);
-        stage.setFullScreen(true);
     }
 }
