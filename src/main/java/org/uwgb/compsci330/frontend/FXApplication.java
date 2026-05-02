@@ -20,7 +20,7 @@ public class FXApplication extends Application {
 
         stage.setTitle("Chatty");
         stage.setResizable(false);
-        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initStyle(StageStyle.DECORATED);
 
         SignInController signInController = new SignInController(null, stage, ClientSingleton.getInstance().getClient());
         var view = FXMLUtils.load("/xml/pages/signIn/signIn.fxml", signInController, true);

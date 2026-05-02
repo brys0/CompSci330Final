@@ -5,24 +5,29 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.uwgb.compsci330.client_sdk.Client;
 import org.uwgb.compsci330.client_sdk.entity.message.Message;
 import org.uwgb.compsci330.client_sdk.entity.relationship.Relationship;
 import org.uwgb.compsci330.client_sdk.entity.user.User;
 import org.uwgb.compsci330.common.model.response.message.MessageType;
+import org.uwgb.compsci330.common.model.response.relationship.RelationshipStatus;
+import org.uwgb.compsci330.common.model.response.user.UserStatus;
 import org.uwgb.compsci330.common.websocket.model.out.OutboundEventType;
 import org.uwgb.compsci330.frontend.controller.base.CommonController;
 
@@ -55,10 +60,10 @@ public class ChatController extends CommonController {
     @FXML
     public void initialize() {
         setupFriendsList();
-        setupMessageList();
         setupEventListeners();
         client.getWs().connect();
 
+        messageList.setCellFactory(m -> new MessageViewCell());
         // You can add "create" a relationship like this
         // client
         // .getRelationships()
@@ -81,21 +86,7 @@ public class ChatController extends CommonController {
 
     private void setupFriendsList() {
         // custom cell factory to show friend username
-        friendsList.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Relationship relationship, boolean empty) {
-                super.updateItem(relationship, empty);
-                if (empty || relationship == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setGraphic(null);
-                    final User friend = relationship.getUser();
-
-                    setText(String.format("%s: %s", friend.getUsername(), friend.getStatus()));
-                }
-            }
-        });
+        friendsList.setCellFactory(lv -> new FriendListViewCell());
 
         // on friend selected, load messages
         friendsList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
@@ -123,7 +114,7 @@ public class ChatController extends CommonController {
                 // 1. Check isLoading immediately before doing ANYTHING
                 if (isLoadingMessages || !hasMoreMessages) return;
 
-                if (newVal.doubleValue() < 0.02) {
+                if (newVal.doubleValue() < 0.02 && messageList.getItems().size() > 20) {
                     isLoadingMessages = true; // Set this IMMEDIATELY on the UI thread
 
                     Message oldest = messageList.getItems().getFirst();
@@ -164,32 +155,6 @@ public class ChatController extends CommonController {
         loadFriends();
     }
 
-    private void setupMessageList() {
-        messageList.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Message item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(formatMessage(item));
-                }
-            }
-        });
-    }
-
-    private String formatMessage(Message item) {
-        final User user = item.getSender();
-        final boolean isSystem = item.getType() == MessageType.SYSTEM;
-        final String formatted;
-        if (isSystem) {
-            formatted = item.getContent();
-        } else {
-            final String username = user == null ? "Unknown User" : user.getUsername();
-            formatted = String.format("%s: %s", username, item.getContent());
-        }
-        return formatted;
-    }
 
     private void setupEventListeners() {
         client.getWs().bus.on(OutboundEventType.MESSAGE_CREATED, e -> {
@@ -236,7 +201,12 @@ public class ChatController extends CommonController {
         Thread.ofVirtual().start(() -> {
             List<Relationship> relationships = null;
             try {
-                relationships = client.getRelationships().fetchRelationships();
+                relationships = client
+                        .getRelationships()
+                        .fetchRelationships()
+                        .stream()
+                        .filter(r -> r.getStatus() == RelationshipStatus.ACCEPTED)
+                        .toList();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -304,7 +274,7 @@ public class ChatController extends CommonController {
             restoreButtonImage.setImage(restoreImage);
         }
 
-        stage.setFullScreen(!stage.isFullScreen());
+        stage.setFullScreen(!stage.isMaximized());
     }
 
     private double xOffset = 0;
@@ -345,5 +315,123 @@ public class ChatController extends CommonController {
         });
 
         sendButton.setDisable(true);
+    }
+
+    private class FriendListViewCell extends ListCell<Relationship> {
+        public static Image onlineImage = new Image("/images/chat_online.png");
+        public static Image offlineImage = new Image("/images/chat_offline.png");
+
+        final VBox relationshipView = new VBox();
+        final HBox usernameAndStatus = new HBox();
+        final HBox statusViewBox = new HBox();
+        final Label username = new Label();
+        final ImageView statusView = new ImageView();
+        final Label lastMessage = new Label();
+
+
+        public FriendListViewCell() {
+            relationshipView.setSpacing(4);
+
+            statusView.setFitWidth(12);
+            statusView.setFitHeight(12);
+
+
+            HBox.setHgrow(relationshipView, Priority.ALWAYS);
+            HBox.setHgrow(usernameAndStatus, Priority.ALWAYS);
+            HBox.setHgrow(statusViewBox, Priority.ALWAYS);
+
+            usernameAndStatus.setAlignment(Pos.CENTER_LEFT);
+            statusViewBox.setAlignment(Pos.CENTER_RIGHT);
+
+            username.getStyleClass().add("primaryTextColor");
+
+            statusViewBox.getChildren().add(statusView);
+            usernameAndStatus
+                    .getChildren()
+                    .addAll(username, statusViewBox);
+
+            relationshipView
+                    .getChildren()
+                    .addAll(usernameAndStatus);
+        }
+
+        @Override
+        protected void updateItem(Relationship relationship, boolean empty) {
+            super.updateItem(relationship, empty);
+
+            if (relationship == null || empty) {
+                setGraphic(null);
+                setText(null);
+            } else {
+                setText(null);
+
+                var user = relationship.getUser();
+//                var messages = relationship.getConversation().getMessages();
+
+                username.setText(user.getUsername());
+                statusView.setImage(user.getStatus() == UserStatus.ONLINE ? onlineImage : offlineImage);
+//                if (!messages.isEmpty()) {
+//                    lastMessage.setText(messages.getFirst().getContent());
+//                    if (!relationshipView.getChildren().contains(lastMessage)) {
+//                        relationshipView.getChildren().add(lastMessage);
+//                    }
+//                } else {
+//                    relationshipView.getChildren().remove(lastMessage);
+//                }
+
+                setGraphic(relationshipView);
+            }
+        }
+    }
+    private class MessageViewCell extends ListCell<Message> {
+        final VBox messageBox = new VBox();
+        final Label username = new Label();
+        final Label text = new Label();
+
+        public MessageViewCell() {
+            messageBox.setSpacing(4);
+            username.getStyleClass().add("message-user");
+            text.getStyleClass().add("message-text");
+            text.setWrapText(true);
+
+            // Ensure the VBox doesn't grow wider than the cell
+            messageBox.setMaxWidth(Control.USE_PREF_SIZE);
+
+            listViewProperty().addListener((obs, oldList, newList) -> {
+                if (newList != null) {
+                    // Bind the VBox to the list width
+                    // Increase subtraction to 40 to account for padding + scrollbar
+                    messageBox.prefWidthProperty().bind(newList.widthProperty().subtract(40));
+
+                    // Explicitly bind the text label width as well
+                    text.prefWidthProperty().bind(messageBox.prefWidthProperty());
+                }
+            });
+
+            messageBox.getChildren().addAll(username, text);
+        }
+
+        @Override
+        protected void updateItem(Message message, boolean empty) {
+            super.updateItem(message, empty);
+
+            if (empty || message == null) {
+                setGraphic(null);
+                setText(null);
+            } else {
+                if (message.getSender() != null) {
+                    username.setText(message.getSender().getUsername());
+                    username.setManaged(true);
+                    username.setVisible(true);
+                } else {
+                    username.setManaged(false);
+                    username.setVisible(false);
+                }
+
+                text.setText(message.getContent());
+                setGraphic(messageBox);
+                setText(null);
+            }
+        }
     }
 }

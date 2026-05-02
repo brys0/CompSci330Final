@@ -11,6 +11,7 @@
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
@@ -18,7 +19,7 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
-<StackPane styleClass="popout" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.uwgb.compsci330.frontend.controller.SignInController">
+<StackPane styleClass="popout" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.uwgb.compsci330.frontend.controller.SignInController">
    <children>
       <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="10.0" styleClass="primary">
          <children>
@@ -74,25 +75,29 @@
                   <DropShadow />
                </effect>
             </Label>
-            <TextField fx:id="username" maxWidth="300.0" promptText="Username" styleClass="secondary">
-               <VBox.margin>
-                  <Insets top="30.0" />
-               </VBox.margin>
-               <cursor>
-                  <Cursor fx:constant="TEXT" />
-               </cursor>
-            </TextField>
-            <PasswordField fx:id="password" maxWidth="300.0" promptText="Password" styleClass="secondary">
-               <cursor>
-                  <Cursor fx:constant="TEXT" />
-               </cursor>
-            </PasswordField>
-            <Button fx:id="signInButton" maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" onAction="#signIn" styleClass="secondary" text="Sign In" textFill="#e0e0e0">
-               <VBox.margin>
-                  <Insets top="10.0" />
-               </VBox.margin>
-            </Button>
-            <Button fx:id="signUpButton" maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" onAction="#signUp" styleClass="secondary" text="Sign Up" textFill="#e0e0e0" />
+            <VBox alignment="BOTTOM_CENTER" prefHeight="52.0" prefWidth="600.0" spacing="10.0">
+               <children>
+                  <TextField fx:id="username" maxWidth="300.0" promptText="Username" styleClass="secondary">
+                     <VBox.margin>
+                        <Insets top="30.0" />
+                     </VBox.margin>
+                     <cursor>
+                        <Cursor fx:constant="TEXT" />
+                     </cursor>
+                  </TextField>
+                  <PasswordField fx:id="password" maxWidth="300.0" promptText="Password" styleClass="secondary">
+                     <cursor>
+                        <Cursor fx:constant="TEXT" />
+                     </cursor>
+                  </PasswordField>
+               </children>
+            </VBox>
+            <HBox alignment="CENTER" prefHeight="71.0" prefWidth="600.0" spacing="10.0">
+               <children>
+                  <Button fx:id="signInButton" maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" onAction="#signIn" styleClass="secondary" text="Sign In" textFill="#e0e0e0" />
+                  <Button fx:id="signUpButton" maxWidth="70.0" minWidth="70.0" mnemonicParsing="false" onAction="#signUp" styleClass="secondary" text="Sign Up" textFill="#e0e0e0" />
+               </children>
+            </HBox>
          </children>
       </VBox>
       <ToolBar fx:id="windowBar" maxHeight="32.0" minHeight="32.0" nodeOrientation="RIGHT_TO_LEFT" onMouseDragged="#windowBarMouseDragged" onMousePressed="#windowBarMousePressed" styleClass="primary" StackPane.alignment="TOP_CENTER">

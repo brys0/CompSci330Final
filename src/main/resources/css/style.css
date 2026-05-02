@@ -7,6 +7,10 @@
     -fx-text-fill:  #e0e0e0;
 }
 
+.primaryTextColor {
+    -fx-text-fill:  #e0e0e0;
+}
+
 .secondary {
      -fx-background-color:  #0f0f0f;
      -fx-text-fill:  #e0e0e0;
@@ -74,6 +78,8 @@ ScrollPane {
     -fx-background-color: #2f3136;
     -fx-text-fill: white;
     -fx-border-color: #4f545c;
+    -fx-border-width: 0;
+    -fx-border-radius: 0;
 }
 
 .tertiary {
@@ -82,15 +88,89 @@ ScrollPane {
     -fx-border-width: 0;
 }
 
-.text-area .content {
-    -fx-background-color: #2f3136;
+.text-area .content, .text-field {
+    -fx-background-color: #42444A;
     -fx-text-fill: white;
     -fx-border-color: #4f545c;
-    -fx-border-radius: 4px;
+    -fx-border-radius: 0;
     -fx-prompt-text-fill: #72767d; /* Color of the placeholder text */
+    -fx-border-width: 0;
 }
 
 /* Focused state to avoid bright blue glowing borders */
 .text-area:focused {
     -fx-border-color: #5865f2;
+}
+
+.message-user {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.message-text, .message-user {
+    -fx-text-fill: white;
+}
+
+.button {
+  -fx-cursor: HAND;
+}
+
+.button:hover {
+    -fx-opacity: 0.8;
+}
+
+.scroll-bar{
+    -fx-background-radius: 0;
+    -fx-background-color: #2A2A2C;
+    background-color: #2A2A2C;
+}
+.scroll-bar:vertical{
+    -fx-background-radius: 0;
+    -fx-background-color: #2A2A2C;
+    background-color: #2A2A2C;
+}
+.scroll-bar > .decrement-button{
+    -fx-background-color: #2A2A2C;
+    background-color: #2A2A2C;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    border-width: 0;
+    -fx-cursor: HAND;
+    cursor: HAND;
+}
+.scroll-bar .decrement-button,
+.scroll-bar .increment-button{
+    -fx-cursor: HAND;
+    cursor: HAND;
+    -fx-border-width: 0;
+    border-width: 0;
+    -fx-background-radius: 0;
+}
+.scroll-bar .decrement-button:hover,
+.scroll-bar .increment-button:hover{
+    -fx-background-color: #4e4e4e;
+    background-color: #4e4e4e;
+}
+.scroll-bar:vertical  .increment-arrow,
+.scroll-bar:vertical  .decrement-arrow,
+.scroll-bar:horizontal .increment-arrow,
+.scroll-bar:horizontal .decrement-arrow{
+    -fx-shape : " ";
+}
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #3D3D3D;
+    background-color: #3D3D3D;
+    -fx-background-radius : 0;
+    -fx-cursor: HAND;
+    cursor: HAND;
+}
+
+.list-view {
+    -fx-horizontal-scrollbar-policy: never;
+}
+
+/* Ensure the cell itself doesn't try to grow beyond the list */
+.list-cell {
+    -fx-max-width: inherit;
 }

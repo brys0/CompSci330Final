@@ -5,10 +5,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.uwgb.compsci330.client_sdk.Client;
@@ -47,7 +49,7 @@ public class FriendController extends CommonController {
         FXMLUtils.LoadedView<FriendController> view = FXMLUtils.load(
                 "/xml/pages/friends/friend_popup.fxml",
                 controller,
-                false);
+                true);
 
         Scene scene = new Scene(view.root());
 
@@ -109,12 +111,22 @@ public class FriendController extends CommonController {
         });
 
 
-        final EventListener<Relationship> relationshipCreated = manager.bus.on(OutboundEventType.RELATIONSHIP_PENDING, (Relationship rel) -> {
+        final EventListener<Relationship> relationshipPending = manager.bus.on(OutboundEventType.RELATIONSHIP_PENDING, (Relationship rel) -> {
             Platform.runLater(() -> {
                 if (rel.isOutgoing()) {
                     outgoingList.add(rel.getRequestee());
                 } else {
                     incomingList.add(rel.getRequester());
+                }
+            });
+        });
+
+        final EventListener<Relationship> relationshipCreated = manager.bus.on(OutboundEventType.RELATIONSHIP_CREATED, (Relationship rel) -> {
+            Platform.runLater(() -> {
+                if (rel.isOutgoing()) {
+                    outgoingList.remove(rel.getRequestee());
+                } else {
+                    incomingList.remove(rel.getRequester());
                 }
             });
         });
@@ -144,6 +156,12 @@ public class FriendController extends CommonController {
         public OutgoingRequestListCell() {
 //            row.prefWidthProperty().bind(outgoingRequestList.widthProperty().subtract(20)); // 1
 //            setMaxWidth(Control.USE_PREF_SIZE); //2
+            HBox.setHgrow(row, Priority.ALWAYS);
+            row.setSpacing(12);
+            row.setAlignment(Pos.CENTER_LEFT);
+            userLabel.getStyleClass().add("primaryTextColor");
+            
+            withdrawRequest.getStyleClass().addAll("primary", "primaryTextColor");
 
             withdrawRequest.setText("Withdraw");
 
@@ -193,8 +211,16 @@ public class FriendController extends CommonController {
 //            row.prefWidthProperty().bind(outgoingRequestList.widthProperty().subtract(20)); // 1
 //            setMaxWidth(Control.USE_PREF_SIZE); //2
 
+            HBox.setHgrow(row, Priority.ALWAYS);
+            row.setSpacing(12);
+
+            row.setAlignment(Pos.CENTER_LEFT);
+            userLabel.getStyleClass().add("primaryTextColor");
+            acceptRequest.getStyleClass().addAll("primary", "primaryTextColor");
+            denyRequest.getStyleClass().addAll("primary", "primaryTextColor");
+
             acceptRequest.setText("Accept");
-            denyRequest.setText("Withdraw");
+            denyRequest.setText("Reject");
 
             row.getChildren().addAll(
                     userLabel,
