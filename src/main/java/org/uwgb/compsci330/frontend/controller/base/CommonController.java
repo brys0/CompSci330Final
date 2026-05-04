@@ -32,6 +32,7 @@ public class CommonController {
     }
 
     protected <T> void navigateToFullscreen(String path, T controller) throws IOException {
+        stage.setFullScreen(true);
         this.navigateTo(path, controller);
 
         stage.setResizable(true);
