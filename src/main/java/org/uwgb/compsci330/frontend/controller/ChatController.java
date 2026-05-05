@@ -274,7 +274,7 @@ public class ChatController extends CommonController {
             restoreButtonImage.setImage(restoreImage);
         }
 
-        stage.setFullScreen(!stage.isFullscreen());
+        stage.setFullScreen(!stage.isFullScreen());
     }
 
     private double xOffset = 0;
